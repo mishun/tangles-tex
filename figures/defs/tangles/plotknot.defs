@@ -1,0 +1,81 @@
+% Рисование зацеплений общего вида, заданных покомпонентно путями.
+% Каждая строка - одна компонента. После списка компонент идут строки
+% вида 0,0,1,0,2,0,5,0,1000,0,8,0 - по одной для каждой компоненты. Длина строки 
+% равна числу точек на компоненте; числа означают: 0 - обычная точка,
+% 1,2,... - верхняя ветвь перекрестка номер 1,2,..., 1000 - тип кривой
+% меняется на пунктирную или обратно. Если нужно нумеровать перекрестки, то
+% далее идут дополнительные строки (по числу перекрестков), каждая из которых
+% содержит угол (град) направления на метку.
+% В качестве аргумента принимает имя файла данных.
+% Пример:
+%           plotknot("knot.dat")
+%
+
+% отрезок длины overlength в окрестности точки t кривой p
+vardef subover expr t of p =
+   numeric L,l,overlength; L:=arclength p; l:=arclength subpath (0,t) of p;
+   overlength:=0.05u; % полудлина отрезка для рисования перекрестков
+   if (l>=overlength) and (l+overlength<=L):
+      subpath (arctime (l-overlength) of p,arctime (l+overlength) of p) of p
+   elseif (l+overlength)>arclength p:
+      (subpath (arctime (l-overlength) of p,length p) of p & subpath (0,arctime (l+overlength-L) of p) of p)
+   else:
+      (subpath (arctime (L+l-overlength) of p,length p) of p & subpath (0,arctime (l+overlength) of p) of p)
+   fi
+enddef;
+
+def plotknot(expr fil)=
+   picture knot; knot:=nullpicture;
+   string s; path p[],over; 
+   numeric n[],node[][],gap,labrad,r,labang[],o,m,i,j,k;
+   boolean dshd;
+   gap:=0.04u;
+   labrad:=0.8defaultscale*(fontsize defaultfont);
+   j:=0;
+   forever:
+      s:=readfrom fil; exitif s="nodes"; j:=j+1;
+      p[j]:=(scantokens(s)) scaled u;
+%addto knot doublepath p[j] withpen currentpen;
+   endfor
+   for i=1 upto j:
+      s:=readfrom fil;
+      k:=0;
+      forsuffixes $=scantokens(s): k:=k+1; node[i][k]:=$; endfor
+   endfor
+   k:=0;
+   forever:
+      s:=readfrom fil; exitif s=EOF;
+      k:=k+1;
+      labang[k]:=scantokens(s);
+   endfor
+   closefrom fil;
+   % разбиваем на пунктирные и сплошные отрезки
+   for i=1 upto j:
+      dshd:=true; o:=0;
+      forever:
+         n:=o;
+         dshd:=not dshd;
+         forever: o:=o+1; exitif (node[i][o]=1000) or (o=length p[i]); endfor
+         addto knot doublepath (subpath (n-1,o-1) of p[i]) withpen currentpen if dshd: dashed evenly scaled 0.7 fi;
+         exitif o=length p[i];
+      endfor
+   endfor
+   % рисуем верхние ветки в перекрестках и ставим номера
+   for i=1 upto j:
+      for m=1 upto length p[i]:
+         if (node[i][m]>0) and (node[i][m]<1000):
+            over:=subover (m-1) of p[i];
+            linecap:=butt;
+            addto knot doublepath over withpen pencircle scaled gap withcolor background;
+            linecap:=rounded;
+            addto knot doublepath over withpen currentpen;
+            % если заданы направления на метки, нумеруем перекрестки
+            if k>0:
+               r:=labrad; if node[i][m]>9: r:=r*1.25; fi
+               addto knot also upiclabel(decimal(node[i][m]),(0,0),up,up,0) shifted ((point (m-1) of p[i])+r*dir(labang[node[i][m]]));
+            fi
+         fi
+      endfor
+   endfor
+   draw knot;
+enddef;

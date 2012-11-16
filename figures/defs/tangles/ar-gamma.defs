@@ -1,0 +1,17 @@
+% голова стрелки
+ahangle := 20;
+ahlength := 1.5mm;
+numeric aratio; aratio = 6/12;
+
+vardef arrowhead expr PATH=pair zendp,zendd,zendl,zendr,zends;
+        zendp=point length PATH of PATH;
+        pair direndp,direndd; direndp=direction length PATH of PATH;
+        zendd=point (arctime ahlength of (reverse PATH)) of (reverse PATH);
+        direndd=direction (arctime (ahlength*cosd ahangle) of (reverse PATH))
+                of (reverse PATH);
+        zendl=zendd+ahlength*(sind ahangle)*dir(angle(direndd)-90);
+        zendr=zendd+ahlength*(sind ahangle)*dir(angle(direndd)+90);
+        zends=point (arctime (aratio*ahlength) of (reverse PATH)) of (reverse PATH);
+        zendl..{dir(angle(direndp)-ahangle/2)}zendp
+                {-dir(angle(direndp)+ahangle/2)}..zendr--zends--cycle
+enddef;

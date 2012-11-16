@@ -1,0 +1,14 @@
+% bw scheme
+
+backgroundColor   := white;
+altColor          := black;
+highlightingColor := 0.8 white;
+threadColor       := black;
+borderColor       := black;
+textColor         := black;
+
+
+altWidth    := 0.4mm;
+threadWidth := 0.4mm;
+borderWidth := 0.2mm;
+arrowWidth  := 0.4mm;

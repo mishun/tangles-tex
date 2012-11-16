@@ -1,0 +1,18 @@
+input prelude.defs
+
+vardef tangleBorder(expr radius) =
+	image(
+		draw fullcircle scaled 2radius withpen (pencircle scaled borderWidth) dashed evenly withcolor borderColor;
+	)
+enddef;
+
+vardef emptyTangle(expr radius, txt) =
+	path brd;
+	brd = fullcircle scaled 2radius;
+
+	image(
+		fill brd withcolor highlightingColor;
+		draw tangleBorder(radius);
+		draw thelabel(txt, (0, 0)) withcolor textColor;
+	)
+enddef;

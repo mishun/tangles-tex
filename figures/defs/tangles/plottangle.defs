@@ -1,0 +1,109 @@
+input prelude.defs
+
+% Рисование танглов, полученных энергетическим методом
+% (формат файла см. в программе plottangle.m).
+% В качестве аргумента принимает имя файла данных.
+% Пример:
+%           plottangle("tangle.dat",1,1)
+%
+vardef plotTangle(expr fil, ifgap, iflab) =
+	picture tang;
+	tang:=nullpicture;
+
+	pair v[], d[][];
+	numeric c[][], s[][], o[];
+	numeric i, j, k, l, m, n, q, r, labrad;
+	path p[], over[];
+	string s;
+
+	labrad := max(0.06u, 6pt);
+	s := readfrom fil; % съедаем первую строчку
+	i := 0;
+	forever:
+		i := i + 1;
+		s := readfrom fil; exitif s = "components"; v[i] := scantokens(s) scaled u;
+		s := readfrom fil; d1[i] := scantokens(s);
+		s := readfrom fil; d2[i] := scantokens(s);
+	endfor
+
+	n := i - 1; % число перекрестков
+	i := 0;
+	m := 0;
+	forever:
+		i := i + 1;
+		s := readfrom fil; exitif s = EOF;
+		j := 0; forsuffixes $ = scantokens(s): j := j + 1; c[i][j] := $; endfor
+		m := max(m, max(c[i][1], c[i][j])); % узел с макс номером по всем компонентам
+		s := readfrom fil;
+		j := 0; forsuffixes $ = scantokens(s): j := j + 1; s[i][j] := $; endfor
+		o[i] := j; % число узлов на i-й компоненте
+	endfor
+	closefrom fil;
+
+	k := m - n; % число ног
+	l := i - 1; % число компонент
+	% определяем кривые, соответствующие компонентам
+	q := 0;
+	for i = 1 upto l:
+		if c[i][1] > n: % для незамкнутых компонент
+			p[i] := (u * dir((c[i][1] - n - 1) / k * 360)){curl 0} .. for j = 2 upto (o[i] - 1): v[c[i][j]]{d[2 - s[i][j]][c[i][j]]}.. endfor {curl 0}(u * dir((c[i][o[i]] - n - 1)/k * 360));
+		else:
+			p[i] := for j = 1 upto o[i]: v[c[i][j]]{d[2 - s[i][j]][c[i][j]]} .. endfor cycle;
+		fi
+
+		% определяем отрезки кривых для рисования перекрестков
+		for j = 1 upto o[i]:
+			if s[i][j] = 1:
+				q := q + 1;
+				over[q] := subpath (j - 1 - 1/4, j - 1 + 1/4) of p[i];
+			fi
+		endfor
+	endfor
+
+	% рисуем
+	for i = 1 upto l:
+		addto tang doublepath p[i] withpen threadPen withcolor threadColor;
+	endfor
+
+	if ifgap > 0:
+		linecap := butt;
+		for i = 1 upto n:
+			addto tang doublepath over[i] withpen (threadPen scaled 3.5) withcolor backgroundColor;
+		endfor
+
+		linecap := rounded;
+		for i = 1 upto n:
+			addto tang doublepath over[i] withpen threadPen withcolor threadColor;
+		endfor
+	fi
+
+	addto tang doublepath fullcircle scaled 2u withpen borderPen dashed evenly withcolor borderColor;
+
+	% "умная" нумерация перекрестков
+	if iflab <> 0:
+		for i = 1 upto n:
+			d3[i] := unitvector(d1[i] + d2[i]) if (d1[i] dotprod d2[i]) > 0: rotated 90 fi;
+		endfor
+
+		% для каждого перекрестка находим направление на ближайшего соседа
+		pair t;
+		for i = 1 upto n:
+			q := 2u;
+			for j = 1 upto n:
+				t := v[j] - v[i];
+				if ((i <> j) and (xpart(t)++ypart(t) < q)):
+					d4[i] := t;
+					q := xpart(t)++ypart(t);
+				fi
+			endfor
+
+			if (d3[i] dotprod d4[i]) > 0: d3[i] := -d3[i]; fi
+			r := labrad;
+			if i>9: r := r * 1.25; fi
+
+			addto tang also thelabel(decimal(i), (0, 0)) shifted (v[i] + r * d3[i]) withcolor textColor;
+		endfor
+	fi
+
+	tang
+enddef;

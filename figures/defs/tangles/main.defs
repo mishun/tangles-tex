@@ -1,0 +1,574 @@
+input tangles/math.defs
+input tangles/ar-gamma.defs
+input tangles/markline.defs
+input hatching
+
+newinternal u; u := mm;
+extraline:=4mm; % средняя длина "обрывков", для прямых
+dotlabeldiam:=2.5pt; % размер точки-кружка
+%labeloffset:=1mm;
+labeldist:=3mm; % расстояние до центра метки от помечаемой точки
+labelspace:=0.5mm; % пространство, "расчищаемое" вокруг метки
+ranglesize:=1.7mm; % размер значка прямого угла
+anglerad:=4.5mm; % радиус дуги для обозначения углов
+anglegap:=0.7mm; % зазор между дугами для двойных-тройных дуг
+vectorheadsize:=1.4mm; % параметры стрелки: размер
+vectorheadalp:=20; % угол при вершине (до 60)
+vectorheadratio:=0.5; % соотношение продольного и поперечного размеров
+springdelta:=1.3mm; % шаг проужинки
+springratio:=2.5; % отношение толщины к шагу
+
+pen fine, thin, thick, eraser, normal;
+fine = pencircle scaled .3pt;
+thin = pencircle scaled .5pt;
+thick = pencircle scaled 1.2pt;
+eraser = pencircle scaled 1.5pt;
+normal = pencircle scaled .75pt;
+pickup normal; defaultpen := savepen;
+
+% точка
+def dot primary z = bdot(z) enddef;
+
+% o-точка
+def odot primary z=
+   unfill fullcircle scaled dotlabeldiam shifted z;
+   draw fullcircle scaled dotlabeldiam shifted z withpen thin;
+enddef;
+
+% черная точка
+vardef bdot(expr p)=
+   fill fullcircle scaled dotlabeldiam shifted p withcolor black;
+enddef;
+
+% сразу несколько точек 
+def dots(text t)= forsuffixes $=t: dot $; endfor enddef;
+
+% сразу несколько o-точек 
+def odots(text t)= forsuffixes $=t: odot $; endfor enddef;
+
+% сразу несколько точек с префиксом z.
+def dotz(text t)= forsuffixes $=t: dot z$; endfor enddef;
+
+% сразу несколько o-точек с префиксом z.
+def odotz(text t)= forsuffixes $=t: odot z$; endfor enddef;
+
+% точка-крестик, "палочки" располагаются между векторами a,b
+%vardef crossdot(expr p,a,b)=
+%   save d; pair d[];
+%   d1:=0.7mm*dir(1/2angle(a)+1/2angle(b));
+%   d2:=0.7mm*dir(1/2angle(a)+1/2angle(-b));
+%   draw (-d1--d1) shifted p withpen fine;
+%   draw (-d2--d2) shifted p withpen fine;
+%enddef;
+% меняем крестик на черную точку
+vardef crossdot(expr p,a,b)=
+   bdot(p);
+enddef;
+
+% для стирания линии
+vardef erase expr p=
+   interim linecap:=butt;
+   draw p withpen eraser withcolor white
+enddef;
+
+% для рисования вектора со стрелкой
+vardef vector(expr A,B)=
+   save a, p; path p; numeric a;
+   a := vectorheadalp/2;
+   p := (1,0){dir (180-a)}..{dir (120+a)}(1*dir(120)){dir -(60+a)}..{dir -(120-a)}(1*dir(-120)){dir (60-a)}..{dir a}(1,0)..cycle;
+   p := ((((p shifted (-1,0)) yscaled vectorheadratio) scaled vectorheadsize) rotated angle(B-A)) shifted B;
+   fill p withcolor black;
+   draw p withpen fine;
+   draw A--(B-vectorheadsize/1.5*unitvector(B-A))
+enddef;
+
+% для рисования пунктиром вектора со стрелкой
+vardef dvector(expr A,B)=
+   save a, p; path p; numeric a;
+   a := vectorheadalp/2;
+   p := (1,0){dir (180-a)}..{dir (120+a)}(1*dir(120)){dir -(60+a)}..{dir -(120-a)}(1*dir(-120)){dir (60-a)}..{dir a}(1,0)..cycle;
+   p := ((((p shifted (-1,0)) yscaled vectorheadratio) scaled vectorheadsize) rotated angle(B-A)) shifted B;
+   fill p withcolor black;
+   draw p withpen fine;
+   draw A--(B-vectorheadsize/1.5*unitvector(B-A)) dashed evenly
+enddef;
+
+% прямая со случайными "хвостиками", проходящая через точки a,b 
+vardef exline(expr a,b)=
+   save d; pair d[];
+   d1:=(1+0.2*normaldeviate)*extraline*unitvector(b-a);
+   d2:=(1+0.2*normaldeviate)*extraline*unitvector(a-b);
+   draw (a+d2)--(b+d1)
+enddef;
+
+% прямая с "хвостиками", заданными в %, проходящая через точки a,b
+% обращение: xxl(2,A,B,3) - хвостик со стороны точки A составляет 20%
+% длины отрезка A-B, со стороны точки B --- 30%
+vardef xxl(expr a,A,B,b)=
+   draw (1+a/10)[B,A]--(1+b/10)[A,B]
+enddef;
+
+% радиус окружности
+vardef radius(expr C)=
+   abs((point 0 of C)-center(C))
+enddef;
+
+% прямая с "хвостиками", заданными в mm, проходящая через точки a,b
+% обращение: xxm(2,A,B,3) - хвостик со стороны точки A составляет 2mm
+% длины отрезка A-B, со стороны точки B --- 3mm
+vardef xxm(expr a,A,B,b)=
+   draw (A-(a*mm)*dir(angle(B-A)))--(B+(b*mm)*dir(angle(B-A)))
+enddef;
+
+% "случайный" путь между точками a,b (когда надо показать "обрезанный" объект)
+vardef randpath(expr a,b)=
+   save d, n, alp; 
+   numeric d, n, alp;
+   n := 5;
+   d = 1/12*length(b-a);
+   alp = angle(b-a) + 90;
+   a..
+   for i=1 upto n:
+      ((i/(n+1))[a,b]+(uniformdeviate(1)*d-0.5*d)*dir(alp))..
+   endfor
+   b
+enddef;
+
+% метка t, расположенная вблизи точки A между векторами B и C
+% параметр s - множитель, управляющий расстоянием от точки A
+% s=1 - нормальное значение. метка возвращается в виде картинки.
+vardef piclabel(expr t,a,b,c,s) =
+   save d, tmp;
+   pair d; 
+   picture tmp;
+   tmp = thelabel(t,(0,0));
+   tmp := tmp shifted -(center tmp);
+   d = s*labeldist*unitvector(unitvector(b)+unitvector(c)) + a;
+   tmp shifted d
+enddef;
+
+% метка t, расположенная вблизи точки A между векторами B и C
+% параметр s - множитель, управляющий расстоянием от точки A
+% s=1 - нормальное значение
+vardef mylabel(expr t,a,b,c,s) =
+   draw piclabel(t,a,b,c,s)
+enddef;
+
+% метка t, расположенная вблизи точки A между векторами B и C
+% под меткой рисуется подкладка в виде овала. возвращается картинка.
+vardef upiclabel(expr t,a,b,c,s) =
+   save d, m, x, y, B, P, label, tmp;
+   pair d, m; 
+   path B, P;
+   picture label, tmp;
+   label = nullpicture;
+   tmp = thelabel(t,(0,0));
+   tmp := tmp shifted -(center tmp);
+   d = s*labeldist*unitvector(unitvector(b)+unitvector(c)) + a;
+   m = 1.5*(urcorner(tmp) - llcorner(tmp));
+   z = urcorner(tmp) + (labelspace,labelspace);
+   P = subpath (0,4) of (fullcircle scaled 2min(x,y));
+   if x>y:
+       B = (P rotated -90 shifted (x-y,0)) -- (P rotated 90 shifted (y-x,0)) -- cycle;
+   else:
+       B = (P shifted (0,y-x)) -- (P rotated 180 shifted (0,x-y)) -- cycle; fi;
+   addto label contour B withcolor white;
+   addto label also tmp;
+   label shifted d
+enddef;
+
+% метка t, расположенная вблизи точки A между векторами B и C
+% под меткой вытаптывается пространство. возвращается картинка.
+vardef spiclabel(expr t,a,b,c,s) =
+   save d,label,tmp; picture label,tmp; pair d;
+   label = nullpicture;
+   tmp = thelabel(t,(0,0));
+   tmp := tmp shifted -(center tmp);
+   for i=1 upto 30:
+       addto label also tmp shifted (0.5pt*dir(12*i)) withcolor background;
+       addto label also tmp shifted (1pt*dir(12*i)) withcolor background;
+   endfor
+   d = s*labeldist*unitvector(unitvector(b)+unitvector(c)) + a;
+   addto label also tmp;
+   label shifted d
+enddef;
+
+% рисует метку с подстилкой
+vardef umylabel(expr t,a,b,c,s) =
+   draw upiclabel(t,a,b,c,s)
+enddef;
+
+% рисует метку с вытоптанной подстилкой
+vardef smylabel(expr t,a,b,c,s) =
+   draw spiclabel(t,a,b,c,s)
+enddef;
+
+% метка t с "подстилкой" (см. mylabel)
+vardef dotlabel(expr t,a,b,c,s)=
+   mylabel(t,a,b,c,s);
+   dot(a);
+enddef;
+
+% рисует точку-кружок и ставит метку t с "подстилкой" (см. mylabel)
+vardef udotlabel(expr t,a,b,c,s)=
+   umylabel(t,a,b,c,s);
+   dot(a);
+enddef;
+
+% возвращяет дугу окружности радиуса 1/2, ограниченную векторами a,b
+% если a,b имеют тип color, то выдается дуга эллипса - проекции окружности на картинную плоскость
+vardef duga(expr a,b)=
+   save t, C, T, A, B, v; 
+   numeric t[]; path C; transform T; pair A, B; color v;
+   if color(a):
+       v=(cos(view_alpha)*cos(view_beta),-cos(view_alpha)*sin(view_beta),sin(view_alpha));
+       A=cproj(a); B=cproj(b);
+       if (v dotprod (a crossprod b))<0:
+            (0,1) transformed T=cproj(-unitvector(b-(b projecton a)));
+       else:
+            (0,1) transformed T=cproj(unitvector(b-(b projecton a)));
+       fi
+       (1,0) transformed T=cproj(unitvector(a));
+       (0,0) transformed T=(0,0);
+   else:
+       A=a; B=b;
+       T=identity;
+   fi
+   C = fullcircle transformed T;
+   (t1,whatever) = C intersectiontimes (origin--(unitvector(A) scaled 2));
+   (t2,whatever) = C intersectiontimes (origin--(unitvector(B) scaled 2));
+   mysubpath (t1,t2) of C
+enddef;
+
+% рисует пометки для углов (одинарные, двойные, тройные дуги)
+% тип метки задается параметром @# = 1,2,3
+% угол задается точкой A и двумя точками a,b в порядке против стрелки
+% r - множитель, управляющий радиусом дуги
+% НОВАЯ ВЕРСИЯ
+vardef drawang@#(expr A,a,b,r,p,c) =
+   save C, O; path C[]; pair O;
+   if color(A): O=cproj(A) scaled 1u; else: O=A; fi
+   C0 = duga(a-A,b-A);
+   C1 = C0 scaled 2(anglerad*r) shifted O;
+   C2 = C0 scaled 2(anglerad*r+anglegap) shifted O;
+   C3 = C0 scaled 2(anglerad*r-anglegap) shifted O;
+   draw C1 withpen p withcolor c;
+   if ((@#=2) or (@#=5)): draw C2 withpen p withcolor c; fi
+   if ((@#=3) or (@#=6)): draw C2 withpen p withcolor c; draw C3 withpen p withcolor c; fi
+enddef;
+
+% пометки для углов - 6 типов (одинарная, двойная, тройная)тонкие
+% (одинарная, двойная, тройная)жирные.
+% тип метки задается параметром @# = 1,2,3,4,5,6
+% остальные параметры как в drawang
+vardef ang@#(expr A,a,b,r) =
+   linecap:=butt;
+   if (@#<4):
+      drawang@#(A,a,b,r,pencircle scaled 0.5pt,black);
+   else:
+      drawang@#(A,a,b,r,pencircle scaled 1pt,black);
+   fi
+   linecap:=rounded;
+enddef;
+
+% пометки для углов со стиранием подложки
+% параметры как в drawang
+vardef uang@#(expr A,a,b,r) =
+   linecap:=butt;
+   %drawang@#(A,a rotated 4,b rotated -4,r,pencircle scaled 3pt, white);
+   drawang@#(A,a,b,r,pencircle scaled 3pt, white);
+   if (@#<4):
+      drawang@#(A,a,b,r,pencircle scaled 0.5pt,black);
+   else:
+      drawang@#(A,a,b,r,pencircle scaled 1pt,black);
+   fi
+   linecap:=rounded;
+enddef;
+
+% рисует ориентироанный угол - стрелку
+vardef orangle(expr A,a,b,r) =
+   save C, O; path C; pair O;
+   if color(A): O=cproj(A) scaled 1u; else: O=A; fi
+   if r<0:
+       drawarrow (reverse duga(a-A,b-A)) scaled 2(anglerad*abs(r)) shifted O withpen fine;
+   else:
+       drawarrow duga(a-A,b-A) scaled 2(anglerad*r) shifted O withpen fine;
+   fi
+enddef;
+
+% выравнивание нескольких меток вдоль прямой, параллельной a--b.
+% метки должны хранится в ячейках L[1],L[2],....
+vardef alilabel(expr a,b) =
+   save c, n, p, v, w, labs;
+   numeric n; n := 0;
+   pair c[], p[], v, w; w := (0,0);
+   picture labs; labs = nullpicture;
+   v = (a-b) rotated 90;
+   % находим опорные точки и средний вектор расстояния до прямой
+   for i=0 upto 20:
+      if known(L[i]):
+      c[i] = center(L[i]);
+      p[i] = whatever[a,b] = whatever[c[i],c[i]+v];
+      w := w + c[i]-p[i];
+      n := n+1; fi;
+   endfor;
+   w := w/n;
+   for i=0 upto 20:
+      if known(L[i]):
+      addto labs also (L[i] shifted (p[i]+w-center(L[i]))); fi;
+   endfor;
+   draw labs
+enddef;
+
+% рисует метку t рядом с точкой a на прямой, заданной вектором b
+% метка располагается справа от направления вектора
+vardef linelabel(expr t,a,b,s)=
+   mylabel(t,a,b rotated -90,b rotated -90,0.6s);
+enddef;
+
+% то же что предыдущая команда, только с подстилкой
+vardef ulinelabel(expr t,a,b,s)=
+   umylabel(t,a,b rotated -90,b rotated -90,0.6s);
+enddef;
+
+% рисует эллипс с центром в точке A, осями a,b, с углом ALP наклона оси a 
+vardef gellipse(expr A, a, b, ALP) =
+   save T; transform T;
+   origin transformed T = origin;
+   right transformed T = (a,0) rotated ALP;
+   up transformed T = (0,b) rotated ALP;
+   fullcircle transformed T shifted A
+enddef;
+
+% находит точки касания прямых, проходящих через точку A с окружностью C
+% точки нумеруются в порядке против стрелки 
+% выдается одна из точек, в зависимости от параметра @#=1,2 
+vardef circtang@#(expr A, C) =
+   save r, d, D; numeric d, r; path D;
+   d = abs(A - center C); % расстояние до центра
+   r = abs(point 0 of C - center C); % радиус окружности
+   if (d<r):
+       message "Error: the point has been outside the circle!"
+       center(C)
+   else:
+       D := fullcircle scaled (2(d+-+r)) rotated angle(center(C)-A) shifted A;
+       D := subpath (0,4) of if (@#=1): reverse fi D;
+       D intersectionpoint C
+   fi
+enddef;
+
+% векторное произведение векторов A,B
+% (положительно, когда "кратчайшая дуга", соединяющая направления векторов,
+% идет против часовой стрелки)
+% ПЕРЕОПРЕДЕЛЯЕТСЯ В 3D.defs
+vardef crossprod(expr A, B) =
+   (xpart(A)*ypart(B)-xpart(B)*ypart(A))
+enddef;
+
+% точки пересечения прямой, заданной точками A,B, с окружностью C.
+% параметр @# определяет номер точки: если @# = 1, 
+% то выдается первая точка пересечения, если смотреть по направлению вектора [A,B].
+vardef circsect@#(expr A, B, C) =
+   save r, p, z;
+   numeric r; path p; pair z;
+   r = if (@#=1): - fi 2abs(point 0 of C - center C); % диаметр окружности
+   % точка пересечения прямой с перпендикуляром из центра
+   z = whatever[A,B] = center C + whatever*((B-A) rotated 90);
+   p = z--(z+r*unitvector(B-A));
+   (p intersectionpoint C)
+enddef;
+
+% определение единичного вектора касательной в точке A к окружности C
+% если A не лежит точно на окружности, берется касательная в ближайшей точке окружности
+vardef circcasa@#(expr A, C) =
+   save t; numeric t;
+   (t,whatever) = C intersectiontimes (center C -- 2A-center C);
+   unitvector(direction t of C)
+enddef;
+
+% находит точки касания прямых, проходящих через точку A с эллипсом E
+% точки нумеруются в порядке против стрелки
+% выдается одна из точек, в зависимости от параметра @#=1,2 
+vardef ellitang@#(expr A, E) =
+   save D, T, U; path D; transform T, U;
+   D := if (crossprod(point 0 of E,point 2 of E)<0): reverse fi E;
+   point 0 of D transformed T = 0.5right;
+   point 2 of D transformed T = 0.5up;
+   center D transformed T = origin;
+   U transformed T = identity;
+   circtang@#(A transformed T,fullcircle) transformed U
+enddef;
+
+% построение главной (большой) оси эллипсоа E.
+% возвращается точка эллипса, лежащая на главной оси.
+vardef majoraxis(expr E) =
+   save r, z; numeric r; pair z[];
+   r = abs(urcorner(E)-llcorner(E));
+   z0 = center(E);
+   z1 = point 0 of E;
+   z2 = point 2 of E;
+   z3 = whatever[z1,z1+((z2-z0) rotated 90)] = whatever[z0,z2];
+   z4 = z1+abs(z2-z0)*unitvector(z3-z1);
+   z5 = 2z1-z4;
+   z6 = z0+r*unitvector(unitvector(z4-z0)+unitvector(z5-z0));
+   z7 = (z0--z6) intersectionpoint E;
+   draw z1--z0--z2;
+   dots(0,3,4,5,6);
+   z7
+enddef;
+
+% находит точки пересечения прямой, проходящей через точки A,B, с эллипсом E
+vardef ellisect@#(expr A, B, E) =
+   save T, U; transform T, U;
+   point 0 of E transformed T = right;
+   point 2 of E transformed T = up;
+   center E transformed T = origin;
+   U transformed T = identity;
+   circsect@#(A transformed T, B transformed T, E transformed T) transformed U
+enddef;
+
+% определение единичного вектора касательной в точке A к эллипсу E
+% если A не лежит точно на эллипсе, берется касательная в близкой точке эллипса
+vardef ellicasa(expr A, E) =
+   save r, t; numeric r, t;
+   r = abs(urcorner(E)-llcorner(E));
+   (t,whatever) = E intersectiontimes (((0,0)--r*unitvector(A-center(E))) shifted center(E));
+   unitvector(direction t of E)
+enddef;
+
+% вырезает кусок эллипса E, заключенный в секторе, определяемом центром эллипса
+% и двумя точками A,B. возвращаемый путь ориентирован в направлении против стрелки
+% относительно центра эллипса (даже если сам эллипс инвертирован)
+vardef ellisegment(expr A, B, E) =
+   save r, t, e; numeric r, t[]; path e;
+   % инвертируем эллипс, если надо
+   if ((xpart(point 0 of E)*ypart(point 1 of E)-ypart(point 0 of E)*xpart(point 1 of E))<0):
+     e := reverse(E); else: e := E;
+   fi
+   r = abs(urcorner(e)-llcorner(e));
+   (t1,whatever) = e intersectiontimes (((0,0)--(r*unitvector(A-center(e)))) shifted center(e));
+   (t2,whatever) = e intersectiontimes (((0,0)--(r*unitvector(B-center(e)))) shifted center(e));
+   if (t1>t2):
+       ((subpath (t1,8) of e) & (subpath (0,t2) of e))
+   else:
+       subpath (t1,t2) of e
+   fi
+enddef;
+
+% значок прямого угла
+% ставится в точке A между направлениями на точки a,b
+% НОВАЯ ВЕРСИЯ
+vardef rangle(expr A, a, b) =
+   save S; path S;
+   S:=(0,0)--unitvector(a-A)--(unitvector(a-A)+unitvector(b-A))--unitvector(b-A)--cycle;
+   S:=S scaled ranglesize shifted A;
+   draw S withpen thin;
+enddef;
+
+% значок прямого угла со стиранием подложки
+% ставится в точке A между направлениями на точки a,b
+% НОВАЯ ВЕРСИЯ
+vardef urangle(expr A, a, b) =
+   save S; path S;
+   S:=(0,0)--unitvector(a-A)--(unitvector(a-A)+unitvector(b-A))--unitvector(b-A)--cycle;
+   S:=S scaled ranglesize shifted A;
+   fill S shifted (0.5pt*(unitvector(a)+unitvector(b))) withcolor white;
+   draw S withpen thin;
+enddef;
+
+
+% обозначение угла с центром в точке A между векторами a,b меткой L
+% r управляет радиусом дуги, нормальное значение r=1
+% дуга рисуется от вектора a до вектора b против часовой
+% параметр @# задает тип отметки - см. ang
+vardef anglabel@#(expr L, A, a, b, r, q) =
+   save p; pair p;
+   ang@#(A, a, b, r);
+   p = r*anglerad*(unitvector(a) rotated ((angle(b)-angle(a))/2)) shifted A;
+   mylabel(L,p,p-A,p-A,q*0.8);
+enddef;
+
+% нахождение эллипса, проходящего через точки A,B и касающегося в этих точках векторов a,b
+% D задает размер эллипса по отношению к расстоянию от точки пересечения касательных
+% до центра эллипса
+vardef twopointellipse(expr A, B, a, b, D) =
+   save o, T, U; 
+   pair o; transform T, U;
+   o = whatever[A,A+a] = whatever[B,B+b]; % точка пересечения касательных
+   o transformed T = (-1/D,0);
+   A transformed T = (-D/4,-((1/2)+-+(D/4)));
+   B transformed T = (-D/4,(1/2)+-+(D/4));
+   U transformed T = identity;
+   fullcircle transformed U
+enddef;
+
+% окружность по трем точкам a,b,c
+vardef threepointcircle(expr a, b, c) =
+   save t, v, p, o; 
+   numeric t[]; pair p[], v[], o;
+   t1 = abs(unitvector(b-a) dotprod unitvector(c-a));
+   t2 = abs(unitvector(a-b) dotprod unitvector(c-b));
+   t3 = abs(unitvector(a-c) dotprod unitvector(b-c));
+   if ((t1>t2) and (t1>t2)):
+       p1 = (a+b)/2; v1 = (b-a) rotated 90;
+       p2 = (a+c)/2; v2 = (c-a) rotated 90;
+   elseif ((t2>t1) and (t2>t3)):
+       p1 = (a+b)/2; v1 = (a-b) rotated 90;
+       p2 = (b+c)/2; v2 = (c-b) rotated 90;
+   else:
+       p1 = (c+b)/2; v1 = (b-c) rotated 90;
+       p2 = (a+c)/2; v2 = (a-c) rotated 90;
+   fi;
+   o = whatever[p1,p1+v1] = whatever[p2,p2+v2];
+   fullcircle scaled 2abs(a-o) shifted o
+enddef;
+
+% пружинка между точками A и B 
+% (параметры пружинки - шаг и отношение толщины к шагу - определены в начале файла)
+vardef spring(expr a,b) = 
+   save n, d, v, w;
+   numeric n, d; pair v, w;
+   n := floor(abs(b-a)/springdelta);
+   d := abs(b-a)/(n+1);
+   v := d*unitvector(b-a);
+   w := springratio/2*(v rotated 90);
+   a{dir angle(v)}..tension 2..
+   for i=1 upto n-1:
+       (v*i+w)..tension 3..(v*(i+1/2)-w){dir angle(-v)}..tension 3..
+   endfor
+   (v*n+w)..tension 2..{dir angle(v)}b
+enddef;
+
+% облако точек в окрестности заданной кривой типа path
+% параметр d управляет шириной облака, параметр n - густотой
+vardef pathcloud(expr p,d,n) = 
+   save a,s,m,q; numeric s,m,q; pair a;
+   m:=floor(1000*n);
+   s:=(arclength p)/m;
+   q:=d*(arclength p)/25;
+   for i=1 upto m:
+       a:=(point (arctime i*s of p) of p)+dir(360*uniformdeviate(1))*q*parabdeviate;
+       draw a withpen pencircle scaled 0.5pt;
+   endfor    
+enddef;
+
+% случайная величина на [0,1] с параболической функцией распределения 1-x^2
+vardef parabdeviate = 
+   save a,b; numeric a,b;
+   forever:
+       a:=uniformdeviate(1); b:=uniformdeviate(1);
+       exitif b<(1-a*a);
+   endfor
+   a
+enddef;
+
+% вариация стандартного макроса subpath для замкнутых путей
+vardef mysubpath expr t of p =
+    if xpart(t)>ypart(t):
+        (subpath (xpart(t),length(p)) of p) & (subpath (0,ypart(t)) of p)
+    else:
+        subpath t of p
+    fi
+enddef;
+
+currentpicture := nullpicture;

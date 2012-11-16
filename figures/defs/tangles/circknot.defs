@@ -1,0 +1,69 @@
+% Рисование зацеплений методом упаковки окружностей
+% (формат файла см. в программе circpackknot.m).
+% Если какие-то перекрестки нужно сделать виртуальными, то в строку с номерами компонент
+% (5-я строка в определении перекрестка необходимо дописать 1.
+% В качестве аргумента принимает имя файла данных.
+% Пример:
+%           circpackknot("knot.dat",1,0,1)
+%
+def circpackknot(expr fil, ifgap, ifcirc, iflab) =
+   picture knot; knot:=nullpicture;
+   string s; pair a,p,d; 
+   numeric n[],gap,labrad,r; path c[];
+   gap:=0.04u;
+   labrad:=max(0.06u,6pt);
+   n3:=0;
+   s:=readfrom fil;
+   j:=0;
+
+   forever:
+      s:=readfrom fil; exitif s="% edges"; p:=scantokens(s);
+      s:=readfrom fil; r:=scantokens(s);
+      s:=readfrom fil; a:=scantokens("(" & s & ")");
+      c0:=fullcircle scaled (2r*u) shifted (u*p);
+      c1:=(dir(xpart(a)){-dir(xpart(a))}..{dir(ypart(a))}dir(ypart(a))) scaled (r*u) shifted (u*p);
+      d:=unitvector(dir(xpart(a))+dir(ypart(a)));
+      s:=readfrom fil; a:=scantokens("(" & s & ")");
+      c2:=(dir(xpart(a)){-dir(xpart(a))}..{dir(ypart(a))}dir(ypart(a))) scaled (r*u) shifted (u*p);
+      d:=d+unitvector(dir(xpart(a))+dir(ypart(a)));
+      i:=0;
+      s:=readfrom fil; forsuffixes $=scantokens(s): i:=i+1; n[i]:=$; endfor 
+      addto knot doublepath c2 withpen currentpen;
+      % если рисуются перекрестки (и перекресток не виртуальный)
+      if ((ifgap<>0) and (n3<>1)):
+          addto knot doublepath c1 withpen pencircle scaled gap withcolor background;
+      fi
+      % если нумеруются перекрестки
+      if ((iflab<>0) and (n3<>1)):
+          j:=j+1;
+          r:=labrad; if j>9: r:=r*1.25; fi
+          addto knot also thelabel(decimal(j),(0,0)) shifted ((c1 intersectionpoint c2)-r*unitvector(d));
+      fi
+      addto knot doublepath c1 withpen currentpen;
+      % для виртуальных перекрестков
+      if ((ifgap<>0) and (n3=1)):
+          n3:=0;
+          addto knot doublepath fullcircle scaled 1.5gap shifted (c1 intersectionpoint c2) withpen currentpen scaled 0.5;
+      fi
+      if ifcirc<>0: addto knot doublepath c0 withpen currentpen scaled 0.25; fi
+   endfor
+   forever:
+      s:=readfrom fil; exitif s="% faces"; p:=scantokens(s);
+      s:=readfrom fil; r:=scantokens(s);
+      s:=readfrom fil; a:=scantokens("(" & s & ")");
+      c0:=fullcircle scaled (2r*u) shifted (u*p);
+      c1:=(dir(xpart(a)){-dir(xpart(a))}..{dir(ypart(a))}dir(ypart(a))) scaled (r*u) shifted (u*p);
+      s:=readfrom fil; n1:=scantokens(s);
+      addto knot doublepath c1 withpen currentpen;
+      if ifcirc<>0: addto knot doublepath c0 withpen currentpen scaled 0.25; fi
+   endfor
+   forever:
+      s:=readfrom fil; exitif s=EOF; p:=scantokens(s);
+      s:=readfrom fil; r:=scantokens(s);
+      c0:=fullcircle scaled (2r*u) shifted (u*p);
+      if ifcirc<>0: addto knot doublepath c0 withpen currentpen scaled 0.25; fi
+   endfor
+   closefrom fil;
+   if ifcirc<>0: addto knot doublepath fullcircle scaled 2u withpen currentpen scaled 0.25; fi
+   draw knot;
+enddef;

@@ -1,0 +1,29 @@
+% A.U.Thor: Anton (protopopov@mccme.ru)
+% макросы для разметки одинаковых линий
+
+numeric markline_h; markline_h = 1.5mm;
+
+% это разнообразные пути, которыми мы отмечаем линии
+path _markline_l[];
+_markline_l1 = (0.5down .. 0.5up);
+_markline_l2 = (0.5down -- 0.5up -- origin);
+	_markline_l2 := _markline_l2 shifted 0.25left -- reverse _markline_l2 shifted 0.25right;
+_markline_l3 = _markline_l2 xscaled 1.25 -- origin -- _markline_l1;
+
+%vardef markline@#(expr A,B)=
+%	draw _markline_l@# scaled markline_h rotated angle(B-A) shifted 1/2[A,B]
+%		withpen currentpen scaled 1/2;
+%enddef;
+
+
+vardef markline@#(expr A,B)=
+        save t; transform t;
+        t=identity shifted ((1-@#)/2,0) xscaled (1.3/sqrt(@#)/2) scaled markline_h rotated angle(B-A) shifted 1/2[A,B];
+        for i=0 upto @#-1: 
+            draw ((i,1/2)--(i,-1/2)) transformed t withpen pencircle scaled 0.4pt;
+        endfor
+enddef;
+
+
+endinput
+

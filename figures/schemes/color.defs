@@ -1,0 +1,14 @@
+% color scheme
+
+backgroundColor   := (0.16 , 0.208, 0.318);
+altColor          := (0.68 , 0.790, 1    );
+highlightingColor := 0.5 altColor + 0.5 backgroundColor;
+threadColor       := (1.0  , 0.6  , 0.306);
+borderColor       := (0.75 , 0.75 , 0.75 );
+textColor         := (0.973, 0.808, 0.587);
+
+
+altWidth    := 0.3mm;
+threadWidth := 0.3mm;
+borderWidth := 0.2mm;
+arrowWidth  := 0.3mm;

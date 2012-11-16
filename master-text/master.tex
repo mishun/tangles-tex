@@ -1,0 +1,49 @@
+\documentclass[a4paper, 14pt]{extarticle}
+\usepackage[a4paper, nohead, left=30mm, right=20mm, top=20mm, bottom=20mm]{geometry}
+\usepackage[english, russian]{babel}
+\usepackage[T1, T2A]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage[ruled]{algorithm}
+\usepackage{algorithmic}
+\usepackage{array}
+\usepackage{lscape}
+\usepackage{ulem}
+
+\graphicspath{{../figures/eps/bw/}}
+
+%\linespread{1.3}
+%\renewcommand{\rmdefault}{ftm}
+
+\def\figureref#1{Рис.\,\protect\ref{#1}}
+\def\eqref#1{(\protect\ref{#1}\protect)}
+
+\floatname{algorithm}{Алгоритм}
+\theoremstyle{plain}
+\newtheorem{theorem}{Теорема}
+\newtheorem{lemma}{Лемма}
+\theoremstyle{definition}
+\newtheorem{definition}{Определение}
+
+\begin{document}
+	\Russian
+
+	\input{title}
+	\setcounter{page}{2}
+
+	\input{abstract}
+
+	\newpage
+	\renewcommand{\contentsname}{Оглавление}
+	\tableofcontents
+
+	\input{introduction}
+	\input{projections}
+	\input{alternating}
+	\input{drawing}
+	\input{conclusion}
+	\input{bibliography}
+\end{document}

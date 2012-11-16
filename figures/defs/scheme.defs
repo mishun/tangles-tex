@@ -1,0 +1,24 @@
+
+color backgroundColor
+	, altColor
+	, highlightingColor
+	, threadColor
+	, borderColor
+	, textColor;
+
+numeric altWidth
+	, threadWidth
+	, borderWidth
+	, arrowWidth;
+
+input scheme-mutable.defs
+
+
+pen altPen;
+altPen := pencircle scaled altWidth;
+
+pen borderPen;
+borderPen := pencircle scaled borderWidth;
+
+pen threadPen;
+threadPen := pencircle scaled threadWidth;

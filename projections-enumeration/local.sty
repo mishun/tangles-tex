@@ -1,0 +1,37 @@
+\RequirePackage[dvips]{graphics,color}
+\RequirePackage{amsmath,amsthm}
+\graphicspath{{pics/}}
+
+\def\centerpic#1#2{\vbox{\refstepcounter{figure}\protect\label{#1}%
+\kern3mm\hbox to\textwidth{\hss\protect\includegraphics{#1}\hss}\kern-2mm%
+\hbox to\textwidth{\hss\vbox{\hsize=.8\textwidth\begin{center}\footnotesize{\bf Figure\,\thefigure}%
+\kern1em #2\end{center}}\hss}\kern-3mm}}
+
+\def\picref#1{Figure\,\protect\ref{#1}}
+
+\def\picbx#1{\setbox0=\hbox{\protect\includegraphics{#1}\,}%
+    \hbox to\wd0{\hss\vbox to0.8\baselineskip{\hsize=\wd0\box0\vss}\hss}}%
+\newbox\Obox\setbox\Obox=\hbox{\picbx{om.eps}}
+\newbox\OIbox\setbox\OIbox=\hbox{\picbx{omi.eps}}
+\newbox\Pbox\setbox\Pbox=\hbox{\picbx{psi.eps}}
+\newbox\PIbox\setbox\PIbox=\hbox{\picbx{psii.eps}}
+\newbox\Xbox\setbox\Xbox=\hbox{\picbx{x.eps}}
+\def\O{\copy\Obox}
+\def\OI{\copy\OIbox}
+\def\P{\copy\Pbox}
+\def\PI{\copy\PIbox}
+\def\X{\copy\Xbox}
+\def\lexmin{\mathop{{\rm lexmin}}}
+\def\A{\mathcal{A}}
+\def\Pr{\mathcal{P}}
+\def\Rr{\mathcal{R}}
+\def\T{\mathcal{T}}
+\def\W{\mathcal{W}}
+\def\rcode{\mathop{{\rm rcode}}}
+\let\lar=\leftarrow
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheorem*{lmm}{Lemma}
+\theoremstyle{definition}
+\newtheorem{dfn}{Definition}

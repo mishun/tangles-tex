@@ -1,0 +1,261 @@
+% рисование хордовой диаграммы, заданной в относительной кодировке
+% пример: 
+%        chordd(13,3,5,6,11,6,2,9,12,8,2,8,12,1);
+%
+def chordd(text t)=
+   picture CD,dotp; 
+   CD:=nullpicture; dotp:=nullpicture;
+   addto dotp contour (fullcircle scaled 0.7mm) withcolor background;
+   addto dotp doublepath (fullcircle scaled 0.7mm);
+   numeric i,n[]; pair p[];
+   i:=0;
+   forsuffixes $=t:
+      i:=i+1; 
+      n[i]:=$;
+   endfor 
+   addto CD doublepath (fullcircle scaled 2u);
+   for j=1 upto i:
+      if n[j]>0:
+         p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+         p2:=(cosd(360*(j-1+n[j])/i),sind(360*(j-1+n[j])/i)) scaled 1u;
+         addto CD doublepath (p1{-p1}..{p2}p2);
+         addto CD also (dotp shifted p1);
+         addto CD also (dotp shifted p2);
+         n[j+n[j]]:=0;
+      fi
+   endfor
+   draw CD
+enddef;
+
+% рисование хордовой диаграммы с пронумерованными вершинами
+% пример: 
+%        numchordd(13,3,5,6,11,6,2,9,12,8,2,8,12,1);
+%
+def numchordd(text t)=
+   picture CD,dotp; 
+   CD:=nullpicture; dotp:=nullpicture;
+   addto dotp contour (fullcircle scaled 0.7mm) withcolor background;
+   addto dotp doublepath (fullcircle scaled 0.7mm);
+   numeric i,n[]; pair p[];
+   i:=0;
+   forsuffixes $=t:
+      i:=i+1; 
+      n[i]:=$;
+   endfor 
+   addto CD doublepath (fullcircle scaled 2u);
+   for j=1 upto i:
+      if n[j]>0:
+         p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+         p2:=(cosd(360*(j-1+n[j])/i),sind(360*(j-1+n[j])/i)) scaled 1u;
+         addto CD doublepath (p1{-p1}..{p2}p2);
+         addto CD also (dotp shifted p1);
+         addto CD also (dotp shifted p2);
+         addto CD also (thelabel(decimal(j),(0,0)) shifted (p1+6pt*unitvector(p1)));
+         addto CD also (thelabel(decimal(j+n[j]),(0,0)) shifted (p2+6pt*unitvector(p2)));
+         n[j+n[j]]:=0;
+      fi
+   endfor
+   draw CD
+enddef;
+
+% рисование хордовой диаграммы с пронумерованными хордами
+% пример: 
+%        gaussnumchordd(13,3,5,6,11,6,2,9,12,8,2,8,12,1);
+%
+def gaussnumchordd(text t)=
+   picture CD,dotp; 
+   CD:=nullpicture; dotp:=nullpicture;
+   addto dotp contour (fullcircle scaled 0.7mm) withcolor background;
+   addto dotp doublepath (fullcircle scaled 0.7mm);
+   numeric i,k,n[]; pair p[];
+   i:=0;
+   forsuffixes $=t:
+      i:=i+1; 
+      n[i]:=$;
+   endfor 
+   addto CD doublepath (fullcircle scaled 2u);
+   k:=0;
+   for j=1 upto i:
+      if n[j]>0:
+         k:=k+1;
+         p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+         p2:=(cosd(360*(j-1+n[j])/i),sind(360*(j-1+n[j])/i)) scaled 1u;
+         addto CD doublepath (p1{-p1}..{p2}p2);
+         addto CD also (dotp shifted p1);
+         addto CD also (dotp shifted p2);
+         addto CD also (thelabel(decimal(k),(0,0)) shifted (p1+6pt*unitvector(p1)));
+         addto CD also (thelabel(decimal(k),(0,0)) shifted (p2+6pt*unitvector(p2)));
+         n[j+n[j]]:=0;
+      fi
+   endfor
+   draw CD
+enddef;
+
+
+% рисование букета, заданного хордовой диаграммой в относительной кодировке
+% пример: 
+%        bouquet(13,3,5,6,11,6,2,9,12,8,2,8,12,1);
+%
+def bouquet(text t)=
+   picture BQ; BQ:=nullpicture;
+   numeric i,k,n[]; pair p[];
+   i:=0;
+   forsuffixes $=t:
+      i:=i+1; 
+      n[i]:=$;
+   endfor
+   for j=1 upto i:
+      if n[j]>0:
+         p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+         p2:=(cosd(360*(j-1+n[j])/i),sind(360*(j-1+n[j])/i)) scaled 1u;
+         if n[j]=i/2:
+            p3:=p1 rotated 90;
+         else:
+            p3:=0.5*(1+2*min(i-n[j],n[j])/(i-1))*unitvector(p1+p2) scaled 1u;
+         fi
+         addto BQ doublepath ((0,0){p1}..(p1/4){p1}..p3{p2-p1}..{-p2}(p2/4)..{-p2}(0,0)) withpen currentpen;
+         n[j+n[j]]:=0;
+      fi
+   endfor
+   addto BQ contour (fullcircle scaled 0.7mm) withcolor black;
+   %addto BQ doublepath (fullcircle scaled 0.7mm);
+   draw BQ
+enddef;
+
+% рисование помеченного букета, заданного хордовой диаграммой в относительной кодировке
+% пример: 
+%        numbouquet(13,3,5,6,11,6,2,9,12,8,2,8,12,1);
+%
+def numbouquet(text t)=
+   picture BQ; BQ:=nullpicture;
+   numeric i,k,n[]; pair p[];
+   i:=0;
+   forsuffixes $=t:
+      i:=i+1; 
+      n[i]:=$;
+   endfor
+   k:=0;
+   for j=1 upto i:
+      if n[j]>0:
+         k:=k+1;
+         p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+         p2:=(cosd(360*(j-1+n[j])/i),sind(360*(j-1+n[j])/i)) scaled 1u;
+         if n[j]=i/2:
+            p3:=p1 rotated 90;
+         else:
+            p3:=0.5*(1+2*min(i-n[j],n[j])/(i-1))*unitvector(p1+p2) scaled 1u;
+         fi
+         addto BQ doublepath ((0,0){p1}..(p1/4){p1}..p3{p2-p1}..{-p2}(p2/4)..{-p2}(0,0)) withpen currentpen;
+         addto BQ contour (fullcircle scaled 6pt shifted (p1/4)) withcolor background;
+         addto BQ also (thelabel(decimal(k),(0,0)) shifted (p1/4));
+         addto BQ contour (fullcircle scaled 6pt shifted (p2/4)) withcolor background;
+         addto BQ also (thelabel(decimal(k),(0,0)) shifted (p2/4));
+         n[j+n[j]]:=0;
+      fi
+   endfor
+   addto BQ contour (fullcircle scaled 0.7mm) withcolor black;
+   %addto BQ doublepath (fullcircle scaled 0.7mm);
+   draw BQ
+enddef;
+
+% рисование "толстого" букета, заданного хордовой диаграммой в относительной кодировке
+% пример: 
+%        fatbouquet(13,3,5,6,11,6,2,9,12,8,2,8,12,1);
+%
+def fatbouquet(text t)=
+   picture BQ; BQ:=nullpicture;
+   numeric i,k,n[]; pair p[];
+   pen bk,wt;
+   bk=pencircle scaled 0.05u;
+   wt=pencircle scaled (0.05u-0.8pt);
+   i:=0;
+   forsuffixes $=t:
+      i:=i+1; 
+      n[i]:=$;
+   endfor
+   for j=1 upto (i/2): 
+       p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+       addto BQ doublepath (p1/4--(-p1/4)) withpen bk;
+   endfor   
+   for j=1 upto i:
+      if n[j]>0:
+         p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+         p2:=(cosd(360*(j-1+n[j])/i),sind(360*(j-1+n[j])/i)) scaled 1u;
+         if n[j]=i/2:
+            p3:=p1 rotated 90;
+         else:
+            p3:=0.5*(1+2*min(i-n[j],n[j])/(i-1))*unitvector(p1+p2) scaled 1u;
+         fi
+         addto BQ doublepath ((p1/4){p1}..p3{p2-p1}..{-p2}(p2/4)) withpen bk;
+         addto BQ doublepath ((0,0){p1}..(p1/4){p1}..p3{p2-p1}..{-p2}(p2/4)..{-p2}(0,0)) withpen wt withcolor background;
+         n[j+n[j]]:=0;
+      fi
+   endfor
+   draw BQ
+enddef;
+
+% рисование "толстого" букета с выделением "граней"
+% пример: 
+%        facebouquet(13,3,5,6,11,6,2,9,12,8,2,8,12,1);
+%
+def facebouquet(text t)=
+   picture BQ,fo; BQ:=nullpicture;
+   numeric i,k,n[]; pair p[]; path q;
+   pen bk,wt;
+   color C[];
+   C[1]=(81,135,214)/255;
+   C[2]=(214,103,29)/255;
+   C[3]=(32,147,25)/255;
+   C[4]=(179,57,209)/255;
+   C[5]=(211,170,114)/255;
+   bk=pencircle scaled 0.05u;
+   wt=pencircle scaled (0.05u-0.8pt);
+   i:=0;
+   forsuffixes $=t: i:=i+1; n[i]:=$; endfor
+   numeric l[],r[];
+   for j=1 upto i: if n[j]>0: l[j]=r[j+n[j]]; r[j]=l[j+n[j]]; n[j+n[j]]:=0; fi endfor
+   for j=1 upto i-1: l[j]=r[j+1]; endfor
+   l[i]=r[1];
+   k:=0;
+   for j=1 upto i: 
+      if not known l[j]: k:=k+1; l[j]=k; fi
+      if not known r[j]: k:=k+1; r[j]=k; fi
+   endfor
+   i:=0;
+   forsuffixes $=t: i:=i+1; n[i]:=$; endfor
+   for j=1 upto i:
+      if n[j]>0:
+         p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+         p2:=(cosd(360*(j-1+n[j])/i),sind(360*(j-1+n[j])/i)) scaled 1u;
+         if n[j]=i/2:
+            p3:=p1 rotated 90;
+         else:
+            p3:=0.5*(1+2*min(i-n[j],n[j])/(i-1))*unitvector(p1+p2) scaled 1u;
+         fi
+         q:=(0,0){p1}..(p1/4){p1}..p3{p2-p1}..{-p2}(p2/4)..{-p2}(0,0)--(0,0)--cycle;
+         fo:=nullpicture;
+         if n[j]>(i/2):
+            addto BQ doublepath q withpen bk scaled 2 withcolor C[l[j]];
+            addto fo doublepath q withpen bk scaled 2 withcolor C[r[j]];
+            clip fo to q;
+         else:
+            addto BQ doublepath q withpen bk scaled 2 withcolor C[r[j]];
+            addto fo doublepath q withpen bk scaled 2 withcolor C[l[j]];
+            clip fo to q;
+         fi
+         addto BQ also fo;
+         addto BQ doublepath q withpen bk;
+         addto BQ doublepath q withpen wt withcolor background;
+         n[j+n[j]]:=0;
+      fi
+   endfor
+   for j=1 upto (i/2): 
+      p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+      addto BQ doublepath (p1/5--(-p1/5)) withpen bk;
+   endfor   
+   for j=1 upto (i/2): 
+      p1:=(cosd(360*(j-1)/i),sind(360*(j-1)/i)) scaled 1u;
+      addto BQ doublepath (p1/4--(-p1/4)) withpen wt withcolor background;
+   endfor   
+   draw BQ
+enddef;
