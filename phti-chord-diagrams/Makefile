@@ -1,7 +1,7 @@
 Targets := chord
 
 OutDir := out
-AuxDir := obj
+AuxDir := intermediate
 
 outFiles = $(addprefix $(OutDir)/, $(addsuffix $(2), $(1)))
 

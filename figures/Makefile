@@ -44,7 +44,7 @@ Figures := \
 
 
 EpsDir := eps/$(Scheme)
-AuxDir := obj
+AuxDir := intermediate
 IncDir := defs
 MpDir  := mp
 SchDir := schemes
