@@ -4,6 +4,7 @@ verbatimtex
 \input latexmp.tex
 etex
 
+filenametemplate "%j.%c.mps";
 
 radius := 2mm;
 dist := 2.8radius;

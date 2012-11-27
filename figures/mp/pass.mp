@@ -5,6 +5,8 @@ verbatimtex
 \input latexmp.tex
 etex
 
+filenametemplate "%j.%c.mps";
+
 phi := 30;
 
 vardef passTangle(expr radius, txt) =

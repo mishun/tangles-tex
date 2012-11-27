@@ -6,7 +6,6 @@ etex
 
 filenametemplate "%j.mps";
 
-
 beginfig(1);
 	height := 1cm;
 

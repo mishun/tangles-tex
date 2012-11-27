@@ -4,6 +4,8 @@ verbatimtex
 \input latexmp.tex
 etex
 
+filenametemplate "%j.%c.mps";
+
 u:=4mm;
 path p[];
 

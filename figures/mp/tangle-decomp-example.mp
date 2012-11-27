@@ -6,7 +6,6 @@ etex
 
 filenametemplate "%j.mps";
 
-
 point_size := 1.5mm;
 big_point_size := 2.5mm;
 

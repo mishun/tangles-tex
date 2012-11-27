@@ -42,9 +42,8 @@ Figures := \
 	virtual.2 \
 	virtual.3
 
-
 EpsDir := eps/$(Scheme)
-AuxDir := intermediate
+AuxDir := intermediate/$(Scheme)
 IncDir := defs
 MpDir  := mp
 SchDir := schemes
@@ -53,18 +52,7 @@ SchFile := scheme-mutable.defs
 LatexFlags = -aux-directory=$(AuxDir) -output-directory=$(AuxDir)
 MPostFlags = -tex="latex -quiet" -output-directory=$(AuxDir) -aux-directory=$(AuxDir) -include-directory=$(IncDir)
 
-define MakeMpsFromMp
-	mpost $(MPostFlags) $<
-endef
-
-TempTexFile = $<.temp.tex
-
-define MakeEpsFromMps
-	@sed 's/@??@/$(subst /,\/,$<)/' "$(IncDir)/eps-template.tex" > "$(TempTexFile)"
-	@latex -quiet $(LatexFlags) "$(TempTexFile)"
-	@dvips -quiet -E -o "$@" "$(basename $(TempTexFile))"
-endef
-
+vpath %.mp $(MpDir)
 
 .PHONY: all
 all: DirectoryStructure SchemeStructure Pictures
@@ -82,69 +70,21 @@ SchemeStructure:
 Pictures: $(addprefix $(EpsDir)/, $(addsuffix .eps, $(Figures)))
 	@rm -f $(IncDir)/$(SchFile)
 
+.SECONDARY:
+$(AuxDir)/%.mps: %.mp
+	mpost $(MPostFlags) $<
 
-$(AuxDir)/%.1: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.2: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.3: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.4: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.5: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.6: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.7: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.8: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.9: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.10: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.11: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.12: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.21: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.22: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.31: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-$(AuxDir)/%.32: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
-
-$(AuxDir)/%.mps: $(MpDir)/%.mp
-	$(MakeMpsFromMp)
-
+.SECONDARY:
+$(addprefix $(AuxDir)/,%.0.mps %.1.mps %.2.mps %.3.mps %.4.mps %.5.mps %.6.mps %.7.mps %.8.mps %.9.mps %.10.mps %.11.mps %.12.mps %.21.mps %.22.mps %.31.mps %.32.mps): %.mp
+	mpost $(MPostFlags) $<
 
 $(EpsDir)/%.eps: $(AuxDir)/%.mps
-	$(MakeEpsFromMps)
-
-$(EpsDir)/%.eps: $(AuxDir)/%
-	$(MakeEpsFromMps)
-
+	@sed 's/@??@/$(subst /,\/,$<)/' "$(IncDir)/eps-template.tex" > "$<.temp.tex"
+	@latex -quiet $(LatexFlags) "$<.temp.tex"
+	@dvips -quiet -E -o "$@" "$(basename $<.temp.tex)"
 
 .PHONY: clean
 clean:
-	@rm -rf "$(AuxDir)"
+	@rm -rf intermediate
 	@rm -f $(MpDir)/*.mpx
 	@rm -f $(IncDir)/$(SchFile)

@@ -7,7 +7,6 @@ etex
 
 filenametemplate "%j.mps";
 
-
 beginfig(1);
 	radius := 7mm;
 	dist := 2.8radius;

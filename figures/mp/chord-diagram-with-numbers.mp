@@ -6,7 +6,6 @@ etex
 
 filenametemplate "%j.mps";
 
-
 vardef chord(expr i, j, n) :=
 	ai := 180 i / n;
 	aj := 180 j / n;

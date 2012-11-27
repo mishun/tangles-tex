@@ -9,6 +9,7 @@ verbatimtex
 \input latexmp.tex
 etex
 
+filenametemplate "%j.%c.mps";
 
 beginfig(1);
 	interim u := 32mm;
