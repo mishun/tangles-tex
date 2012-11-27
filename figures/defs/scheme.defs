@@ -11,7 +11,7 @@ numeric altWidth
 	, borderWidth
 	, arrowWidth;
 
-input scheme-mutable.defs
+input scheme-settings.defs
 
 
 pen altPen;

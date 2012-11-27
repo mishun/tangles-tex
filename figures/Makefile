@@ -1,5 +1,3 @@
-
-Scheme := bw
 Figures := \
 	tangle-sum \
 	alternating-build-4-case.1 \
@@ -42,49 +40,39 @@ Figures := \
 	virtual.2 \
 	virtual.3
 
-EpsDir := eps/$(Scheme)
-AuxDir := intermediate/$(Scheme)
-IncDir := defs
-MpDir  := mp
-SchDir := schemes
-SchFile := scheme-mutable.defs
+IncDir  := defs
+AuxDir  := intermediate
+Schemes := bw color
+Tags    := %.mps %.0.mps %.1.mps %.2.mps %.3.mps %.4.mps %.5.mps %.6.mps %.7.mps %.8.mps %.9.mps %.10.mps %.11.mps %.12.mps %.21.mps %.22.mps %.31.mps %.32.mps
 
-LatexFlags = -aux-directory=$(AuxDir) -output-directory=$(AuxDir)
-MPostFlags = -tex="latex -quiet" -output-directory=$(AuxDir) -aux-directory=$(AuxDir) -include-directory=$(IncDir)
-
-vpath %.mp $(MpDir)
+vpath %.mp mp
 
 .PHONY: all
-all: DirectoryStructure SchemeStructure Pictures
+all: DirectoryStructure $(addprefix eps/bw/, $(addsuffix .eps, $(Figures))) $(addprefix eps/color/, $(addsuffix .eps, $(Figures)))
 
 .PHONY: DirectoryStructure
 DirectoryStructure:
-	@mkdir -p "$(AuxDir)"
-	@mkdir -p "$(EpsDir)"
-
-.PHONY: SchemeStructure
-SchemeStructure:
-	@cp $(SchDir)/$(Scheme).defs $(IncDir)/$(SchFile)
-
-.PHONY: Pictures
-Pictures: $(addprefix $(EpsDir)/, $(addsuffix .eps, $(Figures)))
-	@rm -f $(IncDir)/$(SchFile)
+	@mkdir -p $(addprefix $(AuxDir)/, $(Schemes)) $(addprefix eps/, $(Schemes))
 
 .SECONDARY:
-$(AuxDir)/%.mps: %.mp
-	mpost $(MPostFlags) $<
+$(addprefix $(AuxDir)/bw/, $(Tags)): %.mp
+	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/bw -aux-directory=$(AuxDir)/bw -include-directory=$(IncDir) -include-directory=schemes/bw $<
 
 .SECONDARY:
-$(addprefix $(AuxDir)/,%.0.mps %.1.mps %.2.mps %.3.mps %.4.mps %.5.mps %.6.mps %.7.mps %.8.mps %.9.mps %.10.mps %.11.mps %.12.mps %.21.mps %.22.mps %.31.mps %.32.mps): %.mp
-	mpost $(MPostFlags) $<
+$(addprefix $(AuxDir)/color/, $(Tags)): %.mp
+	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/color -aux-directory=$(AuxDir)/color -include-directory=$(IncDir) -include-directory=schemes/color $<
 
-$(EpsDir)/%.eps: $(AuxDir)/%.mps
+eps/bw/%.eps: $(AuxDir)/bw/%.mps
 	@sed 's/@??@/$(subst /,\/,$<)/' "$(IncDir)/eps-template.tex" > "$<.temp.tex"
-	@latex -quiet $(LatexFlags) "$<.temp.tex"
+	@latex -quiet -aux-directory=$(AuxDir)/bw -output-directory=$(AuxDir)/bw "$<.temp.tex"
+	@dvips -quiet -E -o "$@" "$(basename $<.temp.tex)"
+
+eps/color/%.eps: $(AuxDir)/color/%.mps
+	@sed 's/@??@/$(subst /,\/,$<)/' "$(IncDir)/eps-template.tex" > "$<.temp.tex"
+	@latex -quiet -aux-directory=$(AuxDir)/color -output-directory=$(AuxDir)/color "$<.temp.tex"
 	@dvips -quiet -E -o "$@" "$(basename $<.temp.tex)"
 
 .PHONY: clean
 clean:
-	@rm -rf intermediate
-	@rm -f $(MpDir)/*.mpx
-	@rm -f $(IncDir)/$(SchFile)
+	rm -rf $(AuxDir)
+	rm -f mp/*.mpx
