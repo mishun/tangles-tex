@@ -2,3 +2,8 @@ intermediate/
 out/
 *.eps
 *.mpx
+*.dvi
+*.ps
+*.pdf
+*.aux
+*.log
