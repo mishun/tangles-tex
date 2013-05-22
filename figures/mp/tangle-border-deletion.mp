@@ -6,7 +6,7 @@ verbatimtex
 \input latexmp.tex
 etex
 
-filenametemplate "%j.%c.mps";
+filenametemplate "%j-%c.mps";
 
 vardef tangleA(expr radius) =
 	path e[];

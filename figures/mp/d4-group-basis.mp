@@ -4,7 +4,7 @@ verbatimtex
 \input latexmp.tex
 etex
 
-filenametemplate "%j.%c.mps";
+filenametemplate "%j-%c.mps";
 
 vardef bug(expr a, b, c, d) =
 	numeric rt, rl, ds;

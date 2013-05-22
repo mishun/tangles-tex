@@ -4,7 +4,7 @@ verbatimtex
 \input latexmp.tex
 etex
 
-filenametemplate "%j.%c.mps";
+filenametemplate "%j-%c.mps";
 
 spacing := 15 * 2.5;
 
