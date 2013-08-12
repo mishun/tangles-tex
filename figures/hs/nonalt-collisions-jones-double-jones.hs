@@ -44,7 +44,7 @@ main = putFigures
             filter ((== 4) . numberOfLegs . head) classes
       )
 
-    , (Width 256, pad 1.05 $
+    , (Width 320, pad 1.05 $
         foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 2 ||| b)) $ splitLine 3 $ drawGroups $
             sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 7) . head) classes
       )

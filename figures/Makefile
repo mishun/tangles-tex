@@ -4,7 +4,12 @@ HsFiguresList := \
 	nonalt-collisions-jones-double-jones-2 \
 	nonalt-collisions-jones-double-jones-3 \
 	tangle-doubling-example-1 \
-	tangle-doubling-example-2
+	tangle-doubling-example-2 \
+	tangle-jones-skein-example-1 \
+	tangle-jones-skein-example-2 \
+	tangle-jones-skein-example-3 \
+	tangle-jones-skein-example-4 \
+	tangle-jones-skein-example-5
 
 MpFiguresList := \
 	tangle-sum \
