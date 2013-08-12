@@ -1,1 +1,11 @@
-input scheme.defs
+
+input defs/schemes/bw.mp
+
+pen altPen;
+altPen := pencircle scaled altWidth;
+
+pen borderPen;
+borderPen := pencircle scaled borderWidth;
+
+pen threadPen;
+threadPen := pencircle scaled threadWidth;

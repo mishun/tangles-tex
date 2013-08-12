@@ -1,4 +1,16 @@
-% color scheme
+
+color backgroundColor
+    , altColor
+    , highlightingColor
+    , threadColor
+    , borderColor
+    , textColor;
+
+numeric altWidth
+    , threadWidth
+    , borderWidth
+    , arrowWidth;
+
 
 backgroundColor   := (0.16 , 0.208, 0.318);
 altColor          := (0.68 , 0.790, 1    );

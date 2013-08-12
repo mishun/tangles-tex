@@ -1,4 +1,16 @@
-% bw scheme
+
+color backgroundColor
+    , altColor
+    , highlightingColor
+    , threadColor
+    , borderColor
+    , textColor;
+
+numeric altWidth
+    , threadWidth
+    , borderWidth
+    , arrowWidth;
+
 
 backgroundColor   := white;
 altColor          := black;

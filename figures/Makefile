@@ -1,4 +1,11 @@
-Figures := \
+
+HsFiguresList := \
+	nonalt-collisions-jones-double-jones-1 \
+	nonalt-collisions-jones-double-jones-2 \
+	nonalt-collisions-jones-double-jones-3 \
+	tangle-doubling-example
+
+MpFiguresList := \
 	tangle-sum \
 	alternating-build-4-case-1 \
 	alternating-build-4-case-2 \
@@ -40,37 +47,60 @@ Figures := \
 	virtual-2 \
 	virtual-3
 
+
+OutDir  := eps
 IncDir  := defs
 AuxDir  := intermediate
 Schemes := bw color
-Tags    := %.mps %-0.mps %-1.mps %-2.mps %-3.mps %-4.mps %-5.mps %-6.mps %-7.mps %-8.mps %-9.mps %-10.mps %-11.mps %-12.mps %-21.mps %-22.mps %-31.mps %-32.mps
+Tags    := % %-0 %-1 %-2 %-3 %-4 %-5 %-6 %-7 %-8 %-9 %-10 %-11 %-12 %-21 %-22 %-31 %-32
+
 
 vpath %.mp mp
+vpath %.hs hs
+vpath %.mps $(AuxDir)
+vpath %.hs.exe $(AuxDir)
+
 
 .PHONY: all
-all: DirectoryStructure $(addprefix eps/bw/, $(addsuffix .eps, $(Figures))) $(addprefix eps/color/, $(addsuffix .eps, $(Figures)))
+all: HsFigures MpFigures
+
 
 .PHONY: DirectoryStructure
 DirectoryStructure:
-	@mkdir -p $(addprefix $(AuxDir)/, $(Schemes)) $(addprefix eps/, $(Schemes))
+	mkdir -p $(foreach d, $(OutDir) $(AuxDir), $(addprefix $(d)/, $(Schemes)))
 
+.PHONY: MpFigures
+MpFigures: DirectoryStructure $(foreach sch, $(Schemes), $(addprefix $(OutDir)/$(sch)/, $(addsuffix .eps, $(MpFiguresList))))
+
+.PHONY: HsFigures
+HsFigures: DirectoryStructure $(foreach sch, $(Schemes), $(addprefix $(OutDir)/$(sch)/, $(addsuffix .eps, $(HsFiguresList))))
+
+
+define MpostRule
 .SECONDARY:
-$(addprefix $(AuxDir)/bw/, $(Tags)): %.mp
-	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/bw -aux-directory=$(AuxDir)/bw -include-directory=$(IncDir) -include-directory=schemes/bw $<
+$(addprefix $(AuxDir)/$(1)/, $(addsuffix .mps, $(Tags))): %.mp
+	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/color -aux-directory=$(AuxDir)/color -include-directory=$(IncDir) -include-directory=schemes/color $$<
+#	mv $$(notdir $$(basename $$<))* $$(dir $$@)
+endef
+$(foreach sch,$(Schemes),$(eval $(call MpostRule,$(sch))))
 
+define HsRule
 .SECONDARY:
-$(addprefix $(AuxDir)/color/, $(Tags)): %.mp
-	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/color -aux-directory=$(AuxDir)/color -include-directory=$(IncDir) -include-directory=schemes/color $<
+$(AuxDir)/$(1)/%.hs.exe: %.hs
+	ghc --make -i=defs/ -i=defs/schemes/$(1)/ -hidir=$$(dir $$@) -odir=$$(dir $$@) -o $$@ $$<
+	rm -f $$(dir $$@)/Main.*
+endef
+$(foreach sch,$(Schemes),$(eval $(call HsRule,$(sch))))
 
-eps/bw/%.eps: $(AuxDir)/bw/%.mps
-	@sed 's/@??@/$(subst /,\/,$<)/' "$(IncDir)/eps-template.tex" > "$<.temp.tex"
-	@latex -quiet -aux-directory=$(AuxDir)/bw -output-directory=$(AuxDir)/bw "$<.temp.tex"
-	@dvips -quiet -E -o "$@" "$(basename $<.temp.tex)"
 
-eps/color/%.eps: $(AuxDir)/color/%.mps
-	@sed 's/@??@/$(subst /,\/,$<)/' "$(IncDir)/eps-template.tex" > "$<.temp.tex"
-	@latex -quiet -aux-directory=$(AuxDir)/color -output-directory=$(AuxDir)/color "$<.temp.tex"
-	@dvips -quiet -E -o "$@" "$(basename $<.temp.tex)"
+$(OutDir)/%.eps: $(AuxDir)/%.mps
+	sed 's/@??@/$(subst /,\/,$<)/' $(IncDir)/eps-template.tex > $<.temp.tex
+	latex -quiet -aux-directory=$(dir $<) -output-directory=$(dir $<) $<.temp.tex
+	dvips -quiet -E -o $@ $(basename $<.temp.tex)
+
+$(addprefix $(OutDir)/, $(addsuffix .eps, $(Tags))): $(AuxDir)/%.hs.exe
+	$< $(dir $@)
+
 
 .PHONY: clean
 clean:

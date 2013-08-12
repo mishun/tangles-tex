@@ -1,4 +1,3 @@
-input prelude.defs
 
 vardef tangleBorder(expr radius) =
 	image(
