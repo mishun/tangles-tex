@@ -3,7 +3,8 @@ HsFiguresList := \
 	nonalt-collisions-jones-double-jones-1 \
 	nonalt-collisions-jones-double-jones-2 \
 	nonalt-collisions-jones-double-jones-3 \
-	tangle-doubling-example
+	tangle-doubling-example-1 \
+	tangle-doubling-example-2
 
 MpFiguresList := \
 	tangle-sum \
@@ -57,8 +58,6 @@ Tags    := % %-0 %-1 %-2 %-3 %-4 %-5 %-6 %-7 %-8 %-9 %-10 %-11 %-12 %-21 %-22 %-
 
 vpath %.mp mp
 vpath %.hs hs
-vpath %.mps $(AuxDir)
-vpath %.hs.exe $(AuxDir)
 
 
 .PHONY: all
@@ -92,14 +91,15 @@ $(AuxDir)/$(1)/%.hs.exe: %.hs
 endef
 $(foreach sch,$(Schemes),$(eval $(call HsRule,$(sch))))
 
+.SECONDARY:
+$(addprefix $(AuxDir)/, $(addsuffix .mps, $(Tags))): $(AuxDir)/%.hs.exe
+	$< $(dir $@)
+
 
 $(OutDir)/%.eps: $(AuxDir)/%.mps
 	sed 's/@??@/$(subst /,\/,$<)/' $(IncDir)/eps-template.tex > $<.temp.tex
 	latex -quiet -aux-directory=$(dir $<) -output-directory=$(dir $<) $<.temp.tex
 	dvips -quiet -E -o $@ $(basename $<.temp.tex)
-
-$(addprefix $(OutDir)/, $(addsuffix .eps, $(Tags))): $(AuxDir)/%.hs.exe
-	$< $(dir $@)
 
 
 .PHONY: clean

@@ -33,7 +33,7 @@ putFigure' tag (sz, diagram) = do
                 then take (length pn - length ".hs.exe") pn
                 else pn
             , tag
-            , ".eps"
+            , ".mps"
             ]
 
     renderDia Postscript (PostscriptOptions fileName sz EPS) diagram
