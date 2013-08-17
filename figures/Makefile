@@ -9,10 +9,7 @@ HsFiguresList := \
 	tangle-jones-skein-example-2 \
 	tangle-jones-skein-example-3 \
 	tangle-jones-skein-example-4 \
-	tangle-jones-skein-example-5
-
-MpFiguresList := \
-	tangle-sum \
+	tangle-jones-skein-example-5 \
 	alternating-build-4-case-1 \
 	alternating-build-4-case-2 \
 	alternating-build-4-case-3 \
@@ -21,9 +18,14 @@ MpFiguresList := \
 	alternating-build-4-case-6 \
 	alternating-build-4-case-7 \
 	alternating-build-4-case-8 \
-	chord-diagram-with-numbers \
 	d4-group-basis-1 \
 	d4-group-basis-2 \
+	d4-group-basis-3 \
+	alternating-tangles-1
+
+MpFiguresList := \
+	tangle-sum \
+	chord-diagram-with-numbers \
 	d4-subgroups \
 	nonalternating-tangles-1 \
 	nonalternating-tangles-2 \
@@ -83,7 +85,7 @@ HsFigures: DirectoryStructure $(foreach sch, $(Schemes), $(addprefix $(OutDir)/$
 define MpostRule
 .SECONDARY:
 $(addprefix $(AuxDir)/$(1)/, $(addsuffix .mps, $(Tags))): %.mp
-	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/color -aux-directory=$(AuxDir)/color -include-directory=$(IncDir) -include-directory=schemes/color $$<
+	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/$(1) -aux-directory=$(AuxDir)/$(1) -include-directory=$(IncDir) -include-directory=defs/schemes/$(1) $$<
 #	mv $$(notdir $$(basename $$<))* $$(dir $$@)
 endef
 $(foreach sch,$(Schemes),$(eval $(call MpostRule,$(sch))))

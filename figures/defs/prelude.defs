@@ -1,5 +1,5 @@
 
-input defs/schemes/bw.mp
+input scheme.defs
 
 pen altPen;
 altPen := pencircle scaled altWidth;

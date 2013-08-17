@@ -4,21 +4,8 @@ import Data.Function (on)
 import Data.List (sortBy, splitAt)
 import Text.Printf
 import Diagrams.Prelude
-import Diagrams.Backend.Postscript
 import Math.KnotTh.Tangle.NonAlternating
-import Math.KnotTh.Draw.DrawKnot
 import Figures
-import qualified FigureScheme as S
-
-
-drawOpts :: DrawKnotSettings
-drawOpts = defaultDraw
-    { threadWidth      = S.threadWidth
-    , threadColour     = S.threadColour
-    , borderWidth      = S.borderWidth
-    , borderColour     = S.borderColour
-    , backgroundColour = S.backgroundColour
-    }
 
 
 classes :: [[NonAlternatingTangle]]
@@ -27,30 +14,29 @@ classes = map (map implode) $ read "[[(0,[(8,1),(8,2),(8,3),(3,1),(7,2),(4,0)],[
 
 splitLine :: Int -> [a] -> [[a]]
 splitLine _ [] = []
-splitLine n list = let (h, r) = splitAt n list in h : splitLine n r
-
-
-drawGroups :: [[NonAlternatingTangle]] -> [Diagram Postscript R2]
-drawGroups groups = do
-    (index, tangles) <- zip [1 :: Int ..] groups
-    let txt h = text (printf "%i." index) # fontSize h <> strutX (4 * h)
-    return $! txt 0.4 ||| (foldl1 (\ a b -> a ||| strutX 0.2 ||| b) $ map (drawKnot drawOpts) tangles)
+splitLine n list =
+    let (h, r) = splitAt n list
+    in h : splitLine n r
 
 
 main :: IO ()
-main = putFigures
-    [ (Width 256, pad 1.05 $
-        foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 1.5 ||| b)) $ splitLine 3 $ drawGroups $
-            filter ((== 4) . numberOfLegs . head) classes
-      )
+main =
+    let drawGroups groups = do
+        (index, tangles) <- zip [1 :: Int ..] groups
+        let txt h = text (printf "%i." index) # fontSize h # fc textColour <> strutX (4 * h)
+        return $ scale 8 $ txt 0.4 ||| (foldl1 (\ a b -> a ||| strutX 0.2 ||| b) $ map drawKnotSch tangles)
 
-    , (Width 320, pad 1.05 $
-        foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 2 ||| b)) $ splitLine 3 $ drawGroups $
-            sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 7) . head) classes
-      )
+    in putFigures
+        [ pad 1.05 $
+            foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 1.5 ||| b)) $ splitLine 3 $ drawGroups $
+                filter ((== 4) . numberOfLegs . head) classes
 
-    , (Width 700, pad 1.05 $
-        foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 2 ||| b)) $ splitLine 5 $ drawGroups $
-            sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 8) . head) classes
-      )
-    ]
+        , pad 1.05 $
+            foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 2 ||| b)) $ splitLine 3 $ drawGroups $
+                sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 7) . head) classes
+
+        , pad 1.05 $
+            foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 2 ||| b)) $ splitLine 5 $ drawGroups $
+            --    sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 8) . head) classes
+                filter ((== 4) . numberOfLegs . head) classes
+        ]

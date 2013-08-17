@@ -3,19 +3,7 @@ module Main where
 import Diagrams.Prelude
 import Math.KnotTh.Tangle.NonAlternating
 import Math.KnotTh.Tangle.CascadeCode
-import Math.KnotTh.Draw.DrawKnot
 import Figures
-import qualified FigureScheme as S
-
-
-drawOpts :: DrawKnotSettings
-drawOpts = defaultDraw
-    { threadWidth      = S.threadWidth
-    , threadColour     = S.threadColour
-    , borderWidth      = S.borderWidth
-    , borderColour     = S.borderColour
-    , backgroundColour = S.backgroundColour
-    }
 
 
 main :: IO ()
@@ -25,9 +13,9 @@ main =
         p1 = implode (0, [(0, 1), (0, 0), (0, 3), (0, 2), (0, 5), (0, 4)], [])
         p2 = implode (0, [(0, 3), (0, 2), (0, 1), (0, 0), (0, 5), (0, 4)], [])
     in putFigures
-        [ (Width 32, drawKnot drawOpts src)
-        , (Width 32, drawKnot drawOpts $ rotateTangle 1 p1)
-        , (Width 32, drawKnot drawOpts $ rotateTangle 5 p2)
-        , (Width 32, drawKnot drawOpts p2)
-        , (Width 32, drawKnot drawOpts p1)
+        [ drawKnotSch src # scale 10
+        , drawKnotSch (rotateTangle 1 p1) # scale 10
+        , drawKnotSch (rotateTangle 5 p2) # scale 10
+        , drawKnotSch p2 # scale 10
+        , drawKnotSch p1 # scale 10
         ]
