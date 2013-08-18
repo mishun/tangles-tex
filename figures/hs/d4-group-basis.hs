@@ -24,8 +24,8 @@ main =
 
         l = text "L" # fontSize 1 # fc textColour
 
-    in putFigures
-        [ (l <> bug ["0", "1", "2", "3"]) # scale 3
-        , (l # reflectX # rotateBy (-1 / 4) <> bug ["0", "3", "2", "1"]) # scale 3
-        , (l # rotateBy (-1 / 4) <> bug ["1", "2", "3", "0"]) # scale 3
+    in putFigures $ map (scale 3)
+        [ l <> bug ["0", "1", "2", "3"]
+        , l # reflectX # rotateBy (-1 / 4) <> bug ["0", "3", "2", "1"]
+        , l # rotateBy (-1 / 4) <> bug ["1", "2", "3", "0"]
         ]

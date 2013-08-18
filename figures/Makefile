@@ -21,7 +21,28 @@ HsFiguresList := \
 	d4-group-basis-1 \
 	d4-group-basis-2 \
 	d4-group-basis-3 \
-	alternating-tangles-1
+	alternating-tangles-1 \
+	alternating-tangles-2 \
+	alternating-tangles-3 \
+	alternating-tangles-4 \
+	alternating-tangles-5 \
+	alternating-tangles-6 \
+	alternating-tangles-7 \
+	alternating-tangles-8 \
+	alternating-tangles-9 \
+	alternating-tangles-10 \
+	alternating-tangles-11 \
+	alternating-tangles-12 \
+	alternating-tangles-13 \
+	alternating-tangles-14 \
+	alternating-tangles-15 \
+	nonalt-tangles-1 \
+	nonalt-tangles-2 \
+	nonalt-tangles-3 \
+	nonalt-tangles-4 \
+	nonalt-tangles-5 \
+	nonalt-tangles-6 \
+	nonalt-tangles-7
 
 MpFiguresList := \
 	tangle-sum \
@@ -60,7 +81,7 @@ OutDir  := eps
 IncDir  := defs
 AuxDir  := intermediate
 Schemes := bw color
-Tags    := % %-0 %-1 %-2 %-3 %-4 %-5 %-6 %-7 %-8 %-9 %-10 %-11 %-12 %-21 %-22 %-31 %-32
+Tags    := % %-0 %-1 %-2 %-3 %-4 %-5 %-6 %-7 %-8 %-9 %-10 %-11 %-12 %-13 %-14 %-15 %-16 %-17 %-18 %-19 %-20 %-21 %-22 %-31 %-32
 
 
 vpath %.mp mp

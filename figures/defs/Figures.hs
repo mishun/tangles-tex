@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Figures
     ( module X
-    , threadF, borderF, borderDashing
+    , threadF, borderF, altF, borderDashing
     , drawKnotSch
     , putFigure
     , putFigures
@@ -21,9 +21,10 @@ borderDash :: [Double]
 borderDash = [5 * borderWidth, 4 * borderWidth]
 
 
-threadF, borderF, borderDashing :: (HasStyle d) => d -> d
+threadF, borderF, altF, borderDashing :: (HasStyle d) => d -> d
 threadF = lc threadColour . lw threadWidth
 borderF = lc borderColour . lw borderWidth
+altF    = lc altColour . lw altWidth
 borderDashing = dashing borderDash 0
 
 
@@ -35,6 +36,7 @@ drawKnotSch = D.drawKnot D.defaultDraw
     , D.borderColour     = borderColour
     , D.backgroundColour = backColour
     , D.borderDashing    = borderDash
+    , D.endpointsRadius  = 0
     }
 
 

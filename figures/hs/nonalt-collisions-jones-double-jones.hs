@@ -22,21 +22,17 @@ splitLine n list =
 main :: IO ()
 main =
     let drawGroups groups = do
-        (index, tangles) <- zip [1 :: Int ..] groups
-        let txt h = text (printf "%i." index) # fontSize h # fc textColour <> strutX (4 * h)
-        return $ scale 8 $ txt 0.4 ||| (foldl1 (\ a b -> a ||| strutX 0.2 ||| b) $ map drawKnotSch tangles)
+            (index, tangles) <- zip [1 :: Int ..] groups
+            let txt h = text (printf "%i." index) # fontSize h # fc textColour <> strutX (4 * h)
+            return $ txt 0.4 ||| (hcat' with { sep = 0.3 } $ map drawKnotSch tangles)
 
-    in putFigures
-        [ pad 1.05 $
-            foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 1.5 ||| b)) $ splitLine 3 $ drawGroups $
-                filter ((== 4) . numberOfLegs . head) classes
+    in putFigures $ map (scale 6)
+        [ vcat' with { sep = 0.5 } $ map (hcat' with { sep = 1.5 }) $ splitLine 3 $ drawGroups $
+            filter ((== 4) . numberOfLegs . head) classes
 
-        , pad 1.05 $
-            foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 2 ||| b)) $ splitLine 3 $ drawGroups $
-                sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 7) . head) classes
+        , vcat' with { sep = 0.5 } $ map (hcat' with { sep = 1.5 }) $ splitLine 3 $ drawGroups $
+            sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 7) . head) classes
 
-        , pad 1.05 $
-            foldl1 (\ a b -> a === strutY 0.5 === b) $ map (foldl1 (\ a b -> a ||| strutX 2 ||| b)) $ splitLine 5 $ drawGroups $
-            --    sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 8) . head) classes
-                filter ((== 4) . numberOfLegs . head) classes
+        , vcat' with { sep = 0.5 } $ map (hcat' with { sep = 1.5 }) $ splitLine 5 $ drawGroups $
+            sortBy (compare `on` length) $ filter ((\ t -> numberOfLegs t == 6 && numberOfCrossings t == 8) . head) classes
         ]

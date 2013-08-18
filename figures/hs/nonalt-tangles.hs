@@ -1,10 +1,11 @@
 module Main where
 
 import Data.Function (fix, on)
+import Data.Maybe (mapMaybe)
 import Data.List (splitAt, groupBy, sortBy)
-import Control.Monad.Writer
-import Math.KnotTh.Tangle
-import Math.KnotTh.Tangle.BorderIncremental.FlypeGenerator
+import Math.KnotTh.Tangle.NonAlternating
+import Math.KnotTh.Enumeration.DiagramInfo.MinimalDiagramInfo
+import Math.KnotTh.Enumeration.Applied.NonAlternatingTangles
 import Diagrams.Prelude
 import Figures
 
@@ -31,6 +32,6 @@ main =
 
     in putFigures $ map (scale 6 . drawGroup . map drawKnotSch) $
         let key t = (numberOfCrossings t, numberOfLegs t)
-        in groupBy (on (==) key) $ sortBy (on compare key) $ execWriter $
-            generateFlypeEquivalent 5 $ \ tangle _ ->
-                tell [tangle]
+        in groupBy (on (==) key) $ sortBy (on compare key) $
+            filter (not . isAlternating) $ mapMaybe maybePrimeDiagram $ singleRepresentativeClasses $
+                lookingForwardTanglesEnumeration False 10 0 5
