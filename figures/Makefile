@@ -1,87 +1,43 @@
 
 HsFiguresList := \
-	nonalt-collisions-jones-double-jones-1 \
-	nonalt-collisions-jones-double-jones-2 \
-	nonalt-collisions-jones-double-jones-3 \
-	tangle-doubling-example-1 \
-	tangle-doubling-example-2 \
-	tangle-jones-skein-example-1 \
-	tangle-jones-skein-example-2 \
-	tangle-jones-skein-example-3 \
-	tangle-jones-skein-example-4 \
-	tangle-jones-skein-example-5 \
-	alternating-build-4-case-1 \
-	alternating-build-4-case-2 \
-	alternating-build-4-case-3 \
-	alternating-build-4-case-4 \
-	alternating-build-4-case-5 \
-	alternating-build-4-case-6 \
-	alternating-build-4-case-7 \
-	alternating-build-4-case-8 \
-	d4-group-basis-1 \
-	d4-group-basis-2 \
-	d4-group-basis-3 \
-	alternating-tangles-1 \
-	alternating-tangles-2 \
-	alternating-tangles-3 \
-	alternating-tangles-4 \
-	alternating-tangles-5 \
-	alternating-tangles-6 \
-	alternating-tangles-7 \
-	alternating-tangles-8 \
-	alternating-tangles-9 \
-	alternating-tangles-10 \
-	alternating-tangles-11 \
-	alternating-tangles-12 \
-	alternating-tangles-13 \
-	alternating-tangles-14 \
-	alternating-tangles-15 \
-	nonalt-tangles-1 \
-	nonalt-tangles-2 \
-	nonalt-tangles-3 \
-	nonalt-tangles-4 \
-	nonalt-tangles-5 \
-	nonalt-tangles-6 \
-	nonalt-tangles-7
+	$(addprefix nonalt-collisions-jones-double-jones-, 1 2 3) \
+	$(addprefix tangle-doubling-example-, 1 2) \
+	$(addprefix tangle-jones-skein-example-, 1 2 3 4 5) \
+	$(addprefix alternating-build-4-case-, 1 2 3 4 5 6 7 8) \
+	$(addprefix d4-group-basis-, 1 2 3) \
+	$(addprefix alternating-tangles-, 12 22 23 32 33 34 42 43 44 45 52 53 54 55 56) \
+	$(addprefix nonalt-tangles-, 23 33 34 42 43 44 45) \
+	$(addprefix border-deletion-sequence-, 1 2 3 4 5 6) \
+	$(addprefix tangle-border-operation-, 11 12 21 22 31 32) \
+	$(addprefix reidemeister-, 11 12 21 22 31 32) \
+	$(addprefix pass-, 11 12 21 22) \
+	rational-and-4-tangle \
+	one-side-crossings \
+	simplest-projection
 
 MpFiguresList := \
+	$(addprefix nonalternating-tangles-, 1 2 3) \
+	$(addprefix root-code-example-, 1 2) \
+	$(addprefix virtual-, 1 2 3) \
 	tangle-sum \
 	chord-diagram-with-numbers \
 	d4-subgroups \
-	nonalternating-tangles-1 \
-	nonalternating-tangles-2 \
-	nonalternating-tangles-3 \
-	one-side-crossings \
-	pass-1 \
-	pass-2 \
-	rational-and-4-tangle \
-	reidemeister-11 \
-	reidemeister-12 \
-	reidemeister-21 \
-	reidemeister-22 \
-	reidemeister-31 \
-	reidemeister-32 \
-	root-code-example-1 \
-	root-code-example-2 \
-	sequential-border-deletion \
-	simplest-projection \
-	tangle-border-deletion-1 \
-	tangle-border-deletion-2 \
-	tangle-border-deletion-3 \
 	tangle-decomp-example \
 	tangle-decomp-proof \
 	tangle-decomp-theorem \
-	tangle-to-graph \
-	virtual-1 \
-	virtual-2 \
-	virtual-3
+	tangle-to-graph
 
 
 OutDir  := eps
 IncDir  := defs
 AuxDir  := intermediate
 Schemes := bw color
-Tags    := % %-0 %-1 %-2 %-3 %-4 %-5 %-6 %-7 %-8 %-9 %-10 %-11 %-12 %-13 %-14 %-15 %-16 %-17 %-18 %-19 %-20 %-21 %-22 %-31 %-32
+Tags    := % %-0 %-1 %-2 %-3 %-4 %-5 %-6 %-7 %-8 %-9 \
+	%-10 %-11 %-12 %-13 %-14 %-15 %-16 %-17 %-18 %-19 \
+	%-20 %-21 %-22 %-23 %-24 %-25 %-26 %-27 %-28 %-29 \
+	%-30 %-31 %-32 %-33 %-34 %-35 %-36 %-37 %-38 %-39 \
+	%-40 %-41 %-42 %-43 %-44 %-45 %-46 %-47 %-48 %-49 \
+	%-50 %-51 %-52 %-53 %-54 %-55 %-56 %-57 %-58 %-59
 
 
 vpath %.mp mp
@@ -105,7 +61,7 @@ HsFigures: DirectoryStructure $(foreach sch, $(Schemes), $(addprefix $(OutDir)/$
 
 define MpostRule
 .SECONDARY:
-$(addprefix $(AuxDir)/$(1)/, $(addsuffix .mps, $(Tags))): %.mp
+$(addprefix $(AuxDir)/$(1)/, $(addsuffix .mps, $(Tags))): %.mp $(IncDir)/prelude.defs $(IncDir)/schemes/$(1)/scheme.defs
 	mpost -tex="latex -quiet" -output-directory=$(AuxDir)/$(1) -aux-directory=$(AuxDir)/$(1) -include-directory=$(IncDir) -include-directory=defs/schemes/$(1) $$<
 #	mv $$(notdir $$(basename $$<))* $$(dir $$@)
 endef
@@ -113,9 +69,9 @@ $(foreach sch,$(Schemes),$(eval $(call MpostRule,$(sch))))
 
 define HsRule
 .SECONDARY:
-$(AuxDir)/$(1)/%.hs.exe: %.hs
-	ghc --make -i=defs/ -i=defs/schemes/$(1)/ -hidir=$$(dir $$@) -odir=$$(dir $$@) -o $$@ $$<
-	rm -f $$(dir $$@)/Main.*
+$(AuxDir)/$(1)/%.hs.exe: %.hs $(IncDir)/Figures.hs $(IncDir)/schemes/$(1)/FigureScheme.hs
+	ghc --make -i=$(IncDir)/ -i=$(IncDir)/schemes/$(1)/ -hidir=$$(dir $$@) -odir=$$(dir $$@) -o $$@ $$<
+	rm -f $$(dir $$@)Main.*
 endef
 $(foreach sch,$(Schemes),$(eval $(call HsRule,$(sch))))
 

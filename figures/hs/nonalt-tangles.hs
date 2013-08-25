@@ -1,6 +1,7 @@
 module Main where
 
 import Data.Function (fix, on)
+import Control.Arrow (second)
 import Data.Maybe (mapMaybe)
 import Data.List (splitAt, groupBy, sortBy)
 import Math.KnotTh.Tangle.NonAlternating
@@ -30,7 +31,11 @@ main =
 
             in prefix ||| content
 
-    in putFigures $ map (scale 6 . drawGroup . map drawKnotSch) $
+        tag list =
+            let t = head list
+            in (10 * numberOfCrossings t + numberOfLegs t `div` 2, list)
+
+    in putFigures' $ map (second (scale 6 . drawGroup . map drawKnotSch) . tag) $
         let key t = (numberOfCrossings t, numberOfLegs t)
         in groupBy (on (==) key) $ sortBy (on compare key) $
             filter (not . isAlternating) $ mapMaybe maybePrimeDiagram $ singleRepresentativeClasses $

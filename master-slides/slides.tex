@@ -18,6 +18,8 @@
 \def\figureref#1{Рис.\,\protect\ref{#1}}
 \def\eqref#1{(\protect\ref{#1}\protect)}
 
+\def\putGen#1{\raise-5mm\hbox{\includegraphics[origin=c, scale=0.7]{border-deletion-sequence-#1.eps}}}
+
 \floatname{algorithm}{Алгоритм}
 \theoremstyle{plain}
 \newtheorem{theorem}{Теорема}
@@ -124,7 +126,7 @@
 
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[scale = 0.7]{c/geneology.eps}
+			$\putGen{6} {}\to{} \putGen{5} {}\to{} \putGen{4} {}\to{} \putGen{3} {}\to{} \putGen{2} {}\to{} \putGen{1}$
 		\end{figure}
 
 		\begin{theorem}

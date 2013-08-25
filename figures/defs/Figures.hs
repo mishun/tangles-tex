@@ -3,13 +3,13 @@ module Figures
     ( module X
     , threadF, borderF, altF, borderDashing
     , drawKnotSch
-    , putFigure
     , putFigures
+    , putFigures'
+    , putFigure
     ) where
 
 import Data.List (isSuffixOf)
 import System.Environment (getArgs, getProgName)
-import Control.Monad (forM_)
 import Text.Printf
 import Diagrams.Prelude
 import Diagrams.Backend.Postscript
@@ -41,29 +41,34 @@ drawKnotSch = D.drawKnot D.defaultDraw
 
 
 putFigures :: [Diagram Postscript R2] -> IO ()
-putFigures diagrams =
-    forM_ (diagrams `zip` [1 :: Int ..]) $ \ (diagram, n) ->
-        putFigure' (printf "-%i" n) diagram
+putFigures = putFigures' . zip [1 ..]
+
+
+putFigures' :: [(Int, Diagram Postscript R2)] -> IO ()
+putFigures' =
+    mapM_ $ \ (tag, diagram) ->
+        writeFigure (printf "-%i" tag) diagram
 
 
 putFigure :: Diagram Postscript R2 -> IO ()
-putFigure = putFigure' ""
+putFigure = writeFigure ""
 
 
-putFigure' :: String -> Diagram Postscript R2 -> IO ()
-putFigure' tag diagram = do
-    pn <- getProgName
-    [path] <- getArgs
-    
-    let fileName = concat
-            [ path
-            , if "/" `isSuffixOf` path then "" else "/"
-            , if ".hs.exe" `isSuffixOf` pn
+writeFigure :: String -> Diagram Postscript R2 -> IO ()
+writeFigure tag diagram = do
+    fileName <- do
+        pn <- getProgName
+        [path] <- getArgs
+        return $ printf "%s/%s%s.mps"
+            path
+            (if ".hs.exe" `isSuffixOf` pn
                 then take (length pn - length ".hs.exe") pn
                 else pn
-            , tag
-            , ".mps"
-            ]
+            )
+            tag
 
     let diam = diameter (r2 (1, 0)) diagram
-    renderDia Postscript (PostscriptOptions fileName (Width $ 2.83464567 * diam) EPS) diagram
+    renderDia
+        Postscript
+        (PostscriptOptions fileName (Width $ 2.83464567 * diam) EPS)
+        diagram

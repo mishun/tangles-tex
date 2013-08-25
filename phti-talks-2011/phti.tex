@@ -36,6 +36,8 @@
 \beamersetaveragebackground{pagecolor}
 
 \def\putReid#1{\raise-4mm\hbox{\protect\includegraphics[origin=c]{reidemeister-#1.eps}}}
+\def\putSk#1{\raise-3.5mm\hbox{\protect\includegraphics[origin=c, scale=0.7]{tangle-jones-skein-example-#1.eps}}}
+\def\putGen#1{\raise-5mm\hbox{\includegraphics[origin=c, scale=0.7]{border-deletion-sequence-#1.eps}}}
 
 \title{ Классификация танглов }
 \author{ В.~Р.~Мешков, А.~С.~Мишунин, А.~В.~Омельченко}
@@ -134,7 +136,7 @@
 
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[scale = 0.6]{c/geneology.eps}
+			$\putGen{6} {}\to{} \putGen{5} {}\to{} \putGen{4} {}\to{} \putGen{3} {}\to{} \putGen{2} {}\to{} \putGen{1}$
 		\end{figure}
 
 		\begin{theorem}
@@ -520,7 +522,7 @@
 
 		\begin{figure}[ht]
 			\centering
-			\includegraphics[scale = 0.5]{c/tangle-kauffman-example.eps}
+			$\putSk{1} = a^3 \putSk{2} + a \putSk{3} + (a - a^{-3}) \putSk{4} + (a^{-1} - a^{-5}) \putSk{5}$
 		\end{figure}
 
 		Полученный полином позволяет получить топологический инвариант танглов --- аналог полинома Джонса.
