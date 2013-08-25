@@ -11,6 +11,8 @@ HsFiguresList := \
 	$(addprefix tangle-border-operation-, 11 12 21 22 31 32) \
 	$(addprefix reidemeister-, 11 12 21 22 31 32) \
 	$(addprefix pass-, 11 12 21 22) \
+	$(addprefix tangle-decomp-example-, 1 2) \
+	chord-diagram-with-numbers \
 	rational-and-4-tangle \
 	one-side-crossings \
 	simplest-projection
@@ -20,9 +22,7 @@ MpFiguresList := \
 	$(addprefix root-code-example-, 1 2) \
 	$(addprefix virtual-, 1 2 3) \
 	tangle-sum \
-	chord-diagram-with-numbers \
 	d4-subgroups \
-	tangle-decomp-example \
 	tangle-decomp-proof \
 	tangle-decomp-theorem \
 	tangle-to-graph

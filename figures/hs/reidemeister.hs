@@ -15,12 +15,17 @@ main =
 
         interpolate x y a = ((1 - a) *^ x) ^+^ (a *^ y)
 
-        chain (h : t) = translate h $ fromOffsets (map (^-^ h) t)
+        chain (h : t) = translate h $ fromOffsets $
+            flip fix (h, t) $ \ f (base, list) ->
+                case list of
+                    x : rest -> (x ^-^ base) : f (x, rest)
+                    []       -> []
 
         curve (h : t) = translate h $ fromSegments $
-            flip fix (h, t) $ \ f (base, list) -> case list of
-                a : b : c : rest -> bezier3 (a ^-^ base) (b ^-^ base) (c ^-^ base) : f (c, rest)
-                _                -> []
+            flip fix (h, t) $ \ f (base, list) ->
+                case list of
+                    a : b : c : rest -> bezier3 (a ^-^ base) (b ^-^ base) (c ^-^ base) : f (c, rest)
+                    _                -> []
 
     in putFigures' $ map (second $ scale 4)
         [ (31,
