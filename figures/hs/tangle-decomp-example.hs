@@ -8,18 +8,11 @@ import Figures
 main :: IO ()
 main =
     let brd = circle 1 # borderF # borderDashing
-
-        chain (h : t) = translate h $ fromOffsets $
-            flip fix (h, t) $ \ f (base, list) ->
-                case list of
-                    x : rest -> (x ^-^ base) : f (x, rest)
-                    []       -> []
-
     in putFigures $ map (scale 15)
         [ execWriter $ do
             tell brd
 
-            mapM_ (\ list -> tell $ chain (map r2 list) # threadF)
+            mapM_ (\ list -> tell $ fromVertices (map p2 list) # threadF)
                 [ [ (-0.5, -0.866), (-0.4229, -0.7317), (-0.3583, -0.6229), (-0.3057, -0.5432)
 		  , (-0.2579, -0.4837), (-0.2075, -0.4364), (-0.1502, -0.3964), (-0.0945, -0.3706)
                   , (-0.0429, -0.3580), (0.0068, -0.3561), (0.0561, -0.3642), (0.1067, -0.3832)
@@ -73,7 +66,7 @@ main =
                 , (0.2818, 0.1627)
                 ]
 
-            mapM_ (\ list -> tell $ chain (map r2 list) # threadF)
+            mapM_ (\ list -> tell $ fromVertices (map p2 list) # threadF)
                 [ [ (-0.5, 0.866), (-0.4297, 0.7172), (-0.3777, 0.5843), (-0.3441, 0.4714)
                   , (-0.3218, 0.3690), (-0.3034, 0.2679), (-0.2818, 0.1627), (-0.2521, 0.0644)
                   , (-0.2174, -0.0227), (-0.1767, -0.1020), (-0.1283, -0.1769), (-0.0702, -0.2505)

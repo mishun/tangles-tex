@@ -12,6 +12,7 @@ HsFiguresList := \
 	$(addprefix reidemeister-, 11 12 21 22 31 32) \
 	$(addprefix pass-, 11 12 21 22) \
 	$(addprefix tangle-decomp-example-, 1 2) \
+	$(addprefix root-code-example1-, 1 2) \
 	chord-diagram-with-numbers \
 	rational-and-4-tangle \
 	one-side-crossings \
